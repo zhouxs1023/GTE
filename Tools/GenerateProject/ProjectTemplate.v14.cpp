@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.08.15
 
 #include "ProjectTemplate.v14.h"
 
@@ -29,13 +29,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "_PROJECT_NAME__GRAPHICS_API
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Required", "Required", "{_REQUIRED_GUID_}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTMathematics.v14", "..\..\..\GTMathematics.v14.vcxproj", "{_GTMATHEMATICS_GUID_}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTMathematics.v14", "_GT4_RELATIVE_PATH_GTMathematics.v14.vcxproj", "{_GTMATHEMATICS_GUID_}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTGraphics.v14", "..\..\..\GTGraphics.v14.vcxproj", "{_GTGRAPHICS_GUID_}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTGraphics.v14", "_GT4_RELATIVE_PATH_GTGraphics.v14.vcxproj", "{_GTGRAPHICS_GUID_}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTGraphics_GRAPHICS_API_.v14", "..\..\..\GTGraphics_GRAPHICS_API_.v14.vcxproj", "{_GTGRAPHICSAPI_GUID_}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTGraphics_GRAPHICS_API_.v14", "_GT4_RELATIVE_PATH_GTGraphics_GRAPHICS_API_.v14.vcxproj", "{_GTGRAPHICSAPI_GUID_}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTApplications_GRAPHICS_API_.v14", "..\..\..\GTApplications_GRAPHICS_API_.v14.vcxproj", "{_GTAPPLICATIONSAPI_GUID_}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTApplications_GRAPHICS_API_.v14", "_GT4_RELATIVE_PATH_GTApplications_GRAPHICS_API_.v14.vcxproj", "{_GTAPPLICATIONSAPI_GUID_}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

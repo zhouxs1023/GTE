@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.08.16
 
 #pragma once
 
@@ -21,6 +21,98 @@
 
 namespace gte
 {
+    template <typename Real>
+    class SortEigenstuff
+    {
+    public:
+        void operator()(int sortType, bool isRotation,
+            std::array<Real, 3>& eval, std::array<std::array<Real, 3>, 3>& evec)
+        {
+            if (sortType != 0)
+            {
+                // Sort the eigenvalues to eval[0] <= eval[1] <= eval[2].
+                std::array<size_t, 3> index;
+                if (eval[0] < eval[1])
+                {
+                    if (eval[2] < eval[0])
+                    {
+                        // even permutation
+                        index[0] = 2;
+                        index[1] = 0;
+                        index[2] = 1;
+                    }
+                    else if (eval[2] < eval[1])
+                    {
+                        // odd permutation
+                        index[0] = 0;
+                        index[1] = 2;
+                        index[2] = 1;
+                        isRotation = !isRotation;
+                    }
+                    else
+                    {
+                        // even permutation
+                        index[0] = 0;
+                        index[1] = 1;
+                        index[2] = 2;
+                    }
+                }
+                else
+                {
+                    if (eval[2] < eval[1])
+                    {
+                        // odd permutation
+                        index[0] = 2;
+                        index[1] = 1;
+                        index[2] = 0;
+                        isRotation = !isRotation;
+                    }
+                    else if (eval[2] < eval[0])
+                    {
+                        // even permutation
+                        index[0] = 1;
+                        index[1] = 2;
+                        index[2] = 0;
+                    }
+                    else
+                    {
+                        // odd permutation
+                        index[0] = 1;
+                        index[1] = 0;
+                        index[2] = 2;
+                        isRotation = !isRotation;
+                    }
+                }
+
+                if (sortType == -1)
+                {
+                    // The request is for eval[0] >= eval[1] >= eval[2]. This
+                    // requires an odd permutation, (i0,i1,i2) -> (i2,i1,i0).
+                    std::swap(index[0], index[2]);
+                    isRotation = !isRotation;
+                }
+
+                std::array<Real, 3> unorderedEVal = eval;
+                std::array<std::array<Real, 3>, 3> unorderedEVec = evec;
+                for (size_t j = 0; j < 3; ++j)
+                {
+                    size_t i = index[j];
+                    eval[j] = unorderedEVal[i];
+                    evec[j] = unorderedEVec[i];
+                }
+            }
+
+            // Ensure the ordered eigenvectors form a right-handed basis.
+            if (!isRotation)
+            {
+                for (size_t j = 0; j < 3; ++j)
+                {
+                    evec[2][j] = -evec[2][j];
+                }
+            }
+        }
+    };
+
     template <typename Real>
     class SymmetricEigensolver3x3
     {
@@ -178,56 +270,16 @@ namespace gte
                 }
             }
 
-            std::array<Real, 3> diagonal = { b00, b11, b22 };
-            int i0, i1, i2;
-            if (sortType >= 1)
+            eval = { b00, b11, b22 };
+            for (size_t row = 0; row < 3; ++row)
             {
-                // diagonal[i0] <= diagonal[i1] <= diagonal[i2]
-                bool isOdd = Sort(diagonal, i0, i1, i2);
-                if (!isOdd)
+                for (size_t col = 0; col < 3; ++col)
                 {
-                    isRotation = !isRotation;
-                }
-            }
-            else if (sortType <= -1)
-            {
-                // diagonal[i0] >= diagonal[i1] >= diagonal[i2]
-                bool isOdd = Sort(diagonal, i0, i1, i2);
-                std::swap(i0, i2);  // (i0,i1,i2)->(i2,i1,i0) is odd
-                if (isOdd)
-                {
-                    isRotation = !isRotation;
-                }
-            }
-            else
-            {
-                i0 = 0;
-                i1 = 1;
-                i2 = 2;
-            }
-
-            eval[0] = diagonal[i0];
-            eval[1] = diagonal[i1];
-            eval[2] = diagonal[i2];
-            evec[0][0] = Q[0][i0];
-            evec[0][1] = Q[1][i0];
-            evec[0][2] = Q[2][i0];
-            evec[1][0] = Q[0][i1];
-            evec[1][1] = Q[1][i1];
-            evec[1][2] = Q[2][i1];
-            evec[2][0] = Q[0][i2];
-            evec[2][1] = Q[1][i2];
-            evec[2][2] = Q[2][i2];
-
-            // Ensure the columns of Q form a right-handed set.
-            if (!isRotation)
-            {
-                for (int j = 0; j < 3; ++j)
-                {
-                    evec[2][j] = -evec[2][j];
+                    evec[row][col] = Q[col][row];
                 }
             }
 
+            SortEigenstuff<Real>()(sortType, isRotation, eval, evec);
             return iteration;
         }
 
@@ -333,65 +385,6 @@ namespace gte
                 return sum + std::fabs(bSuper) == sum;
             }
         }
-
-        // Support for sorting the eigenvalues and eigenvectors.  The output
-        // (i0,i1,i2) is a permutation of (0,1,2) so that
-        // d[i0] <= d[i1] <= d[i2].  The 'bool' return indicates whether the
-        // permutation is odd.  If it is not, the handedness of the Q matrix
-        // must be adjusted.
-        bool Sort(std::array<Real, 3> const& d, int& i0, int& i1, int& i2) const
-        {
-            bool odd;
-            if (d[0] < d[1])
-            {
-                if (d[2] < d[0])
-                {
-                    i0 = 2;
-                    i1 = 0;
-                    i2 = 1;
-                    odd = true;
-                }
-                else if (d[2] < d[1])
-                {
-                    i0 = 0;
-                    i1 = 2;
-                    i2 = 1;
-                    odd = false;
-                }
-                else
-                {
-                    i0 = 0;
-                    i1 = 1;
-                    i2 = 2;
-                    odd = true;
-                }
-            }
-            else
-            {
-                if (d[2] < d[1])
-                {
-                    i0 = 2;
-                    i1 = 1;
-                    i2 = 0;
-                    odd = false;
-                }
-                else if (d[2] < d[0])
-                {
-                    i0 = 1;
-                    i1 = 2;
-                    i2 = 0;
-                    odd = true;
-                }
-                else
-                {
-                    i0 = 1;
-                    i1 = 0;
-                    i2 = 2;
-                    odd = false;
-                }
-            }
-            return odd;
-        }
     };
 
 
@@ -404,7 +397,7 @@ namespace gte
         // eigenvalues are sorted in ascending order: eval0 <= eval1 <= eval2.
 
         void operator()(Real a00, Real a01, Real a02, Real a11, Real a12, Real a22,
-            std::array<Real, 3>& eval, std::array<std::array<Real, 3>, 3>& evec) const
+            int sortType, std::array<Real, 3>& eval, std::array<std::array<Real, 3>, 3>& evec) const
         {
             // Precondition the matrix by factoring out the maximum absolute
             // value of the components.  This guards against floating-point
@@ -525,6 +518,8 @@ namespace gte
             eval[0] *= maxAbsElement;
             eval[1] *= maxAbsElement;
             eval[2] *= maxAbsElement;
+
+            SortEigenstuff<Real>()(sortType, true, eval, evec);
         }
 
     private:

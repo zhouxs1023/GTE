@@ -107,8 +107,9 @@
       <AdditionalDependencies>Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>mkdir "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
+xcopy /DFYV "$(TargetPath)" "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -128,8 +129,9 @@
       <AdditionalDependencies>Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>mkdir "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
+xcopy /DFYV "$(TargetPath)" "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -153,8 +155,9 @@
       <AdditionalDependencies>Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>mkdir "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
+xcopy /DFYV "$(TargetPath)" "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -178,8 +181,9 @@
       <AdditionalDependencies>Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>mkdir "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
+xcopy /DFYV "$(TargetPath)" "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

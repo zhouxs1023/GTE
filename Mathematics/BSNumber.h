@@ -236,14 +236,29 @@ namespace gte
         }
 
         // Member access.
+        inline void SetSign(int32_t sign)
+        {
+            mSign = sign;
+        }
+
         inline int32_t GetSign() const
         {
             return mSign;
         }
 
+        inline void SetBiasedExponent(int32_t biasedExponent)
+        {
+            mBiasedExponent = biasedExponent;
+        }
+
         inline int32_t GetBiasedExponent() const
         {
             return mBiasedExponent;
+        }
+
+        inline void SetExponent(int32_t exponent)
+        {
+            mBiasedExponent = exponent - mUInteger.GetNumBits() + 1;
         }
 
         inline int32_t GetExponent() const
@@ -849,14 +864,6 @@ namespace gte
         // needed only internally.
         friend class BSRational<UIntegerType>;
         friend class UnitTestBSNumber;
-
-    public:
-        // FOR INTERNAL USE ONLY. This function supports the std::ldexp
-        // function for BSNumber.
-        inline void SetBiasedExponent(int32_t biasedExponent)
-        {
-            mBiasedExponent = biasedExponent;
-        }
     };
 }
 
@@ -958,7 +965,18 @@ namespace std
     template <typename UIntegerType>
     inline gte::BSNumber<UIntegerType> frexp(gte::BSNumber<UIntegerType> const& x, int* exponent)
     {
-        return (gte::BSNumber<UIntegerType>)std::frexp((double)x, exponent);
+        if (x.GetSign() != 0)
+        {
+            gte::BSNumber<UIntegerType> result = x;
+            *exponent = result.GetExponent() + 1;
+            result.SetExponent(-1);
+            return result;
+        }
+        else
+        {
+            *exponent = 0;
+            return gte::BSNumber<UIntegerType>(0);
+        }
     }
 
     template <typename UIntegerType>

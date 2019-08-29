@@ -277,7 +277,17 @@ namespace gte
             return mNumerator;
         }
 
+        inline BSNumber<UIntegerType>& GetNumerator()
+        {
+            return mNumerator;
+        }
+
         inline BSNumber<UIntegerType> const& GetDenominator() const
+        {
+            return mDenominator;
+        }
+
+        inline BSNumber<UIntegerType>& GetDenominator()
         {
             return mDenominator;
         }
@@ -556,7 +566,7 @@ namespace gte
             {
                 return (RealType)0;
             }
-            }
+        }
 
 #if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
     public:
@@ -569,14 +579,6 @@ namespace gte
         BSNumber<UIntegerType> mNumerator, mDenominator;
 
         friend class UnitTestBSRational;
-
-    public:
-        // FOR INTERNAL USE ONLY. This function supports the std::ldexp
-        // function for BSRational.
-        inline BSNumber<UIntegerType>& GetNumerator()
-        {
-            return mNumerator;
-        }
     };
 }
 
@@ -678,7 +680,22 @@ namespace std
     template <typename UIntegerType>
     inline gte::BSRational<UIntegerType> frexp(gte::BSRational<UIntegerType> const& x, int* exponent)
     {
-        return (gte::BSRational<UIntegerType>)std::frexp((double)x, exponent);
+        gte::BSRational<UIntegerType> result = x;
+        auto& numer = result.GetNumerator();
+        auto& denom = result.GetDenominator();
+        int32_t e = numer.GetExponent() - denom.GetExponent();
+        numer.SetExponent(0);
+        denom.SetExponent(0);
+        int32_t saveSign = numer.GetSign();
+        numer.SetSign(1);
+        if (numer >= denom)
+        {
+            ++e;
+            numer.SetExponent(-1);
+        }
+        numer.SetSign(saveSign);
+        *exponent = e;
+        return result;
     }
 
     template <typename UIntegerType>
