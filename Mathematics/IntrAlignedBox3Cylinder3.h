@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.10.23
 
 #pragma once
 
@@ -23,7 +23,8 @@ namespace gte
     public:
         struct Result
         {
-            bool queryIsSuccessful;
+            // The outcome of the mLCP.Solve(...) call.
+            typename LCPSolverShared<Real>::Result outcome;
 
             bool intersect;
 
@@ -111,7 +112,7 @@ namespace gte
             }
 
             std::array<Real, 8> w, z;
-            if (mLCP.Solve(q, M, w, z))
+            if (mLCP.Solve(q, M, w, z, &result.outcome))
             {
                 Vector3<Real> zSolution{ z[0], z[1], z[2] };
                 Vector3<Real> diff = zSolution - origin;
@@ -120,12 +121,11 @@ namespace gte
             }
             else
             {
-                // If you reach this case, the maximum number of iterations
-                // was not specified to be large enough or there is a problem
-                // due to floating-point rounding errors.  If you believe the
-                // latter is true, file a bug report.
-                result.queryIsSuccessful = false;
-
+                // You should examine result.outcome. The query is valid when
+                // the outcome is NO_SOLUTION. It is possible, however, that
+                // the solver did not have a large enough iteration budget
+                // (FAILED_TO_CONVERGE) or it has invalid input
+                // (INVALID_INPUT).
                 result.intersect = false;
             }
 

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.10.17
 
 #pragma once
 
@@ -67,11 +67,11 @@ namespace gte
         //
         // Choice of N for UIntegerFP32<N>.
         //    input type | compute type | N
-        //    -----------+--------------+------
-        //    float      | BSNumber     |    27
-        //    double     | BSNumber     |   197
-        //    float      | BSRational   |  2882
-        //    double     | BSRational   | 21688
+        //    -----------+--------------+----
+        //    float      | BSNumber     |  27
+        //    double     | BSNumber     | 197
+        //    float      | BSRational   |  79
+        //    double     | BSRational   | 591
         int ToPlane(int i, int v0, int v1, int v2) const
         {
             return ToPlane(mVertices[i], v0, v1, v2);
@@ -112,7 +112,7 @@ namespace gte
         }
 
         // For a tetrahedron with vertices ordered as described in the file
-        // GteTetrahedronKey.h, the function returns
+        // TetrahedronKey.h, the function returns
         //   +1, P outside tetrahedron
         //   -1, P inside tetrahedron
         //    0, P on tetrahedron
@@ -120,10 +120,10 @@ namespace gte
         // Choice of N for UIntegerFP32<N>.
         //    input type | compute type | N
         //    -----------+--------------+----
-        //    float      | BSNumber     |    27
-        //    double     | BSNumber     |   197
-        //    float      | BSRational   |  2882
-        //    double     | BSRational   | 21688
+        //    float      | BSNumber     |  27
+        //    double     | BSNumber     | 197
+        //    float      | BSRational   |  79
+        //    double     | BSRational   | 591
         // The query involves four calls of ToPlane, so the numbers match
         // those of ToPlane.
         int ToTetrahedron(int i, int v0, int v1, int v2, int v3) const
@@ -161,18 +161,18 @@ namespace gte
         }
 
         // For a tetrahedron with vertices ordered as described in the file
-        // GteTetrahedronKey.h, the function returns
+        // TetrahedronKey.h, the function returns
         //   +1, P outside circumsphere of tetrahedron
         //   -1, P inside circumsphere of tetrahedron
         //    0, P on circumsphere of tetrahedron
         //
         // Choice of N for UIntegerFP32<N>.
         //    input type | compute type | N
-        //    -----------+--------------+--------
-        //    float      | BSNumber     |      44
-        //    float      | BSRational   |     329
-        //    double     | BSNumber     |  298037
-        //    double     | BSRational   | 2254442
+        //    -----------+--------------+-----
+        //    float      | BSNumber     |   44
+        //    double     | BSNumber     |  329
+        //    float      | BSNumber     |  262
+        //    double     | BSRational   | 1969
         int ToCircumsphere(int i, int v0, int v1, int v2, int v3) const
         {
             return ToCircumsphere(mVertices[i], v0, v1, v2, v3);

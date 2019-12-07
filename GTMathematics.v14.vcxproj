@@ -24,6 +24,7 @@
     <ClInclude Include="Mathematics\AdaptiveSkeletonClimbing3.h" />
     <ClInclude Include="Mathematics\AlignedBox.h" />
     <ClInclude Include="Mathematics\APConversion.h" />
+    <ClInclude Include="Mathematics\APInterval.h" />
     <ClInclude Include="Mathematics\ApprCircle2.h" />
     <ClInclude Include="Mathematics\ApprCone3.h" />
     <ClInclude Include="Mathematics\ApprCylinder3.h" />
@@ -185,6 +186,7 @@
     <ClInclude Include="Mathematics\FastMarch3.h" />
     <ClInclude Include="Mathematics\FeatureKey.h" />
     <ClInclude Include="Mathematics\FIQuery.h" />
+    <ClInclude Include="Mathematics\FPInterval.h" />
     <ClInclude Include="Mathematics\FrenetFrame.h" />
     <ClInclude Include="Mathematics\Frustum3.h" />
     <ClInclude Include="Mathematics\GaussianBlur2.h" />
@@ -588,4 +590,3 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
-

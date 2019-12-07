@@ -3,11 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.09.11
 
 #pragma once
 
+#include <Mathematics/Logger.h>
 #include <Mathematics/UIntegerALU32.h>
+#include <limits>
 #include <istream>
 #include <ostream>
 #include <vector>
@@ -17,7 +19,7 @@
 // arithmetic of unsigned integers.
 
 // Uncomment this to collect statistics on how large the UIntegerAP32 storage
-// becomes when using it for the UIntegerType of BSNumber.  If you use this
+// becomes when using it for the UInteger of BSNumber.  If you use this
 // feature, you must define gsUIntegerAP32MaxSize somewhere in your code.
 // After a sequence of BSNumber operations, look at gsUIntegerAP32MaxSize in
 // the debugger watch window.  If the number is not too large, you might be
@@ -102,16 +104,6 @@ namespace gte
 #endif
         }
 
-        UIntegerAP32(int numBits)
-            :
-            mNumBits(numBits),
-            mBits(1 + (numBits - 1) / 32)
-        {
-#if defined(GTE_COLLECT_UINTEGERAP32_STATISTICS)
-            AtomicMax(gsUIntegerAP32MaxSize, mBits.size());
-#endif
-        }
-
         // Assignment.
         UIntegerAP32& operator=(UIntegerAP32 const& number)
         {
@@ -135,16 +127,21 @@ namespace gte
         }
 
         // Member access.
-        void SetNumBits(uint32_t numBits)
+        void SetNumBits(int32_t numBits)
         {
-            mNumBits = numBits;
-            if (mNumBits > 0)
+            if (numBits > 0)
             {
+                mNumBits = numBits;
                 mBits.resize(1 + (numBits - 1) / 32);
+            }
+            else if (numBits == 0)
+            {
+                mNumBits = 0;
+                mBits.clear();
             }
             else
             {
-                mBits.clear();
+                LogError("The number of bits must be nonnegative.");
             }
 
 #if defined(GTE_COLLECT_UINTEGERAP32_STATISTICS)
@@ -180,6 +177,16 @@ namespace gte
         inline int32_t GetSize() const
         {
             return static_cast<int32_t>(mBits.size());
+        }
+
+        inline static int32_t GetMaxSize()
+        {
+            return std::numeric_limits<int32_t>::max();
+        }
+
+        inline void SetAllBitsToZero()
+        {
+            std::fill(mBits.begin(), mBits.end(), 0u);
         }
 
         // Disk input/output.  The return value is 'true' iff the operation
@@ -220,8 +227,5 @@ namespace gte
     private:
         int32_t mNumBits;
         std::vector<uint32_t> mBits;
-
-        // TODO:  Is this needed any longer in the unit test harness?
-        friend class UnitTestBSNumber;
     };
 }

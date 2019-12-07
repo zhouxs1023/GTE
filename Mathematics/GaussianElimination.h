@@ -3,12 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.11.23
 
 #pragma once
 
 #include <Mathematics/Logger.h>
-#include <Mathematics/Math.h>
 #include <Mathematics/LexicoArray2.h>
 #include <cstring>
 #include <vector>
@@ -92,7 +91,8 @@ namespace gte
                         {
                             if (!pivoted[i2])
                             {
-                                Real absValue = std::fabs(matInvM(i1, i2));
+                                Real value = matInvM(i1, i2);
+                                Real absValue = (value >= zero ? value : -value);
                                 if (absValue > maxValue)
                                 {
                                     maxValue = absValue;

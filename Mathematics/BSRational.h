@@ -3,25 +3,25 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.11.03
 
 #pragma once
 
 #include <Mathematics/BSNumber.h>
 
-// See the comments in BSNumber.h about the UIntegerType requirements.  The
+// See the comments in BSNumber.h about the UInteger requirements. The
 // denominator of a BSRational is chosen to be positive, which allows some
-// simplification of comparisons.  Also see the comments about exposing the
+// simplification of comparisons. Also see the comments about exposing the
 // GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE conditional define.
 
 namespace gte
 {
-    template <typename UIntegerType>
+    template <typename UInteger>
     class BSRational
     {
     public:
-        // Construction.  The default constructor generates the zero
-        // BSRational.  The constructors that take only numerators set the
+        // Construction. The default constructor generates the zero
+        // BSRational. The constructors that take only numerators set the
         // denominators to one.
         BSRational()
             :
@@ -98,7 +98,7 @@ namespace gte
 #endif
         }
 
-        BSRational(BSNumber<UIntegerType> const& numerator)
+        BSRational(BSNumber<UInteger> const& numerator)
             :
             mNumerator(numerator),
             mDenominator(1)
@@ -204,7 +204,7 @@ namespace gte
 #endif
         }
 
-        BSRational(BSNumber<UIntegerType> const& numerator, BSNumber<UIntegerType> const& denominator)
+        BSRational(BSNumber<UInteger> const& numerator, BSNumber<UInteger> const& denominator)
             :
             mNumerator(numerator),
             mDenominator(denominator)
@@ -217,8 +217,8 @@ namespace gte
             }
 
             // Set the exponent of the denominator to zero, but you can do so
-            // only by modifying the biased exponent.  Adjust the numerator
-            // accordingly.  This prevents large growth of the exponents in
+            // only by modifying the biased exponent. Adjust the numerator
+            // accordingly. This prevents large growth of the exponents in
             // both numerator and denominator simultaneously.
             mNumerator.mBiasedExponent -= mDenominator.GetExponent();
             mDenominator.mBiasedExponent = -(mDenominator.GetUInteger().GetNumBits() - 1);
@@ -228,15 +228,88 @@ namespace gte
 #endif
         }
 
-        // Implicit conversions.
+        BSRational(std::string const& number)
+        {
+            LogAssert(number.size() > 0, "A number must be specified.");
+
+            // Get the leading '+' or '-' if it exists.
+            std::string fpNumber;
+            int sign;
+            if (number[0] == '+')
+            {
+                fpNumber = number.substr(1);
+                sign = +1;
+                LogAssert(fpNumber.size() > 1, "Invalid number format.");
+            }
+            else if (number[0] == '-')
+            {
+                fpNumber = number.substr(1);
+                sign = -1;
+                LogAssert(fpNumber.size() > 1, "Invalid number format.");
+            }
+            else
+            {
+                fpNumber = number;
+                sign = +1;
+            }
+
+            size_t decimal = fpNumber.find('.');
+            if (decimal != std::string::npos)
+            {
+                if (decimal > 0)
+                {
+                    if (decimal < fpNumber.size())
+                    {
+                        // The number is "x.y".
+                        BSNumber<UInteger> intPart = BSNumber<UInteger>::ConvertToInteger(fpNumber.substr(0, decimal));
+                        BSRational frcPart = ConvertToFraction(fpNumber.substr(decimal + 1));
+                        mNumerator = intPart * frcPart.mDenominator + frcPart.mNumerator;
+                        mDenominator = frcPart.mDenominator;
+                    }
+                    else
+                    {
+                        // The number is "x.".
+                        mNumerator = BSNumber<UInteger>::ConvertToInteger(fpNumber.substr(0,fpNumber.size()-1));
+                        mDenominator = 1;
+                    }
+                }
+                else
+                {
+                    // The number is ".y".
+                    BSRational frcPart = ConvertToFraction(fpNumber.substr(1));
+                    mNumerator = frcPart.mNumerator;
+                    mDenominator = frcPart.mDenominator;
+                }
+            }
+            else
+            {
+                // The number is "x".
+                mNumerator = BSNumber<UInteger>::ConvertToInteger(fpNumber);
+                mDenominator = 1;
+            }
+            mNumerator.SetSign(sign);
+        }
+
+        BSRational(const char* number)
+            :
+            BSRational(std::string(number))
+        {
+        }
+
+        // Implicit conversions. These always use the default rounding mode,
+        // round-to-nearest-ties-to-even.
         operator float() const
         {
-            return Convert<uint32_t, float>();
+            float output;
+            Convert(*this, FE_TONEAREST, output);
+            return output;
         }
 
         operator double() const
         {
-            return Convert<uint64_t, double>();
+            double output;
+            Convert(*this, FE_TONEAREST, output);
+            return output;
         }
 
         // Assignment.
@@ -267,27 +340,33 @@ namespace gte
         }
 
         // Member access.
+        inline void SetSign(int sign)
+        {
+            mNumerator.SetSign(sign);
+            mDenominator.SetSign(1);
+        }
+
         inline int GetSign() const
         {
             return mNumerator.GetSign() * mDenominator.GetSign();
         }
 
-        inline BSNumber<UIntegerType> const& GetNumerator() const
+        inline BSNumber<UInteger> const& GetNumerator() const
         {
             return mNumerator;
         }
 
-        inline BSNumber<UIntegerType>& GetNumerator()
+        inline BSNumber<UInteger>& GetNumerator()
         {
             return mNumerator;
         }
 
-        inline BSNumber<UIntegerType> const& GetDenominator() const
+        inline BSNumber<UInteger> const& GetDenominator() const
         {
             return mDenominator;
         }
 
-        inline BSNumber<UIntegerType>& GetDenominator()
+        inline BSNumber<UInteger>& GetDenominator()
         {
             return mDenominator;
         }
@@ -368,14 +447,14 @@ namespace gte
         // Arithmetic.
         BSRational operator+(BSRational const& r) const
         {
-            BSNumber<UIntegerType> product0 = mNumerator * r.mDenominator;
-            BSNumber<UIntegerType> product1 = mDenominator * r.mNumerator;
-            BSNumber<UIntegerType> numerator = product0 + product1;
+            BSNumber<UInteger> product0 = mNumerator * r.mDenominator;
+            BSNumber<UInteger> product1 = mDenominator * r.mNumerator;
+            BSNumber<UInteger> numerator = product0 + product1;
 
             // Complex expressions can lead to 0/denom, where denom is not 1.
             if (numerator.mSign != 0)
             {
-                BSNumber<UIntegerType> denominator = mDenominator * r.mDenominator;
+                BSNumber<UInteger> denominator = mDenominator * r.mDenominator;
                 return BSRational(numerator, denominator);
             }
             else
@@ -386,14 +465,14 @@ namespace gte
 
         BSRational operator-(BSRational const& r) const
         {
-            BSNumber<UIntegerType> product0 = mNumerator * r.mDenominator;
-            BSNumber<UIntegerType> product1 = mDenominator * r.mNumerator;
-            BSNumber<UIntegerType> numerator = product0 - product1;
+            BSNumber<UInteger> product0 = mNumerator * r.mDenominator;
+            BSNumber<UInteger> product1 = mDenominator * r.mNumerator;
+            BSNumber<UInteger> numerator = product0 - product1;
 
             // Complex expressions can lead to 0/denom, where denom is not 1.
             if (numerator.mSign != 0)
             {
-                BSNumber<UIntegerType> denominator = mDenominator * r.mDenominator;
+                BSNumber<UInteger> denominator = mDenominator * r.mDenominator;
                 return BSRational(numerator, denominator);
             }
             else
@@ -404,12 +483,12 @@ namespace gte
 
         BSRational operator*(BSRational const& r) const
         {
-            BSNumber<UIntegerType> numerator = mNumerator * r.mNumerator;
+            BSNumber<UInteger> numerator = mNumerator * r.mNumerator;
 
             // Complex expressions can lead to 0/denom, where denom is not 1.
             if (numerator.mSign != 0)
             {
-                BSNumber<UIntegerType> denominator = mDenominator * r.mDenominator;
+                BSNumber<UInteger> denominator = mDenominator * r.mDenominator;
                 return BSRational(numerator, denominator);
             }
             else
@@ -422,12 +501,12 @@ namespace gte
         {
             LogAssert(r.mNumerator.mSign != 0, "Division by zero in BSRational::operator/.");
 
-            BSNumber<UIntegerType> numerator = mNumerator * r.mDenominator;
+            BSNumber<UInteger> numerator = mNumerator * r.mDenominator;
 
             // Complex expressions can lead to 0/denom, where denom is not 1.
             if (numerator.mSign != 0)
             {
-                BSNumber<UIntegerType> denominator = mDenominator * r.mNumerator;
+                BSNumber<UInteger> denominator = mDenominator * r.mNumerator;
                 if (denominator.mSign < 0)
                 {
                     numerator.mSign = -numerator.mSign;
@@ -465,8 +544,8 @@ namespace gte
             return *this;
         }
 
-        // Disk input/output.  The fstream objects should be created using
-        // std::ios::binary.  The return value is 'true' iff the operation
+        // Disk input/output. The fstream objects should be created using
+        // std::ios::binary. The return value is 'true' iff the operation
         // was successful.
         bool Write(std::ostream& output) const
         {
@@ -479,93 +558,22 @@ namespace gte
         }
 
     private:
-        // Generic conversion code that converts to the correctly rounded
-        // result using round-to-nearest-ties-to-even.
-        template <typename UIntType, typename RealType>
-        RealType Convert() const
+        // Helper for converting a string to a BSRational, where the string
+        // is the fractional part "y" of the string "x.y".
+        static BSRational ConvertToFraction(std::string const& number)
         {
-            if (mNumerator.mSign == 0)
+            LogAssert(number.find_first_not_of("0123456789") == std::string::npos, "Invalid number format.");
+            BSRational y(0), ten(10), pow10(10);
+            for (size_t i = 0; i < number.size(); ++i)
             {
-                return (RealType)0;
-            }
-
-            // The ratio is abstractly of the form (1.u*2^p)/(1.v*2^q).
-            // Convert to the form (1.u/1.v)*2^{p-q}, if 1.u >= 1.v, or to the
-            // form (2*(1.u)/1.v)*2*{p-q-1}) if 1.u < 1.v.  The final form
-            // n/d must be in the interval [1,2).
-            BSNumber<UIntegerType> n = mNumerator, d = mDenominator;
-            int32_t sign = n.mSign * d.mSign;
-            n.mSign = 1;
-            d.mSign = 1;
-            int32_t pmq = n.GetExponent() - d.GetExponent();
-            n.mBiasedExponent = 1 - n.GetUInteger().GetNumBits();
-            d.mBiasedExponent = 1 - d.GetUInteger().GetNumBits();
-            if (BSNumber<UIntegerType>::LessThanIgnoreSign(n, d))
-            {
-                ++n.mBiasedExponent;
-                --pmq;
-            }
-
-            // At this time, n/d = 1.c in [1,2).  Define the sequence of bits
-            // w = 1c = w_{imax} w_{imax-1} ... w_0 w_{-1} w_{-2} ... where
-            // imax = precision(RealType)-1 and w_{imax} = 1.
-
-            // Compute 'precision' bits for w, the leading bit guaranteed to
-            // be 1 and occurring at index (1 << (precision-1)).
-            BSNumber<UIntegerType> one(1), two(2);
-            int const imax = std::numeric_limits<RealType>::digits - 1;
-            UIntType w = 0;
-            UIntType mask = ((UIntType)1 << imax);
-            for (int i = imax; i >= 0; --i, mask >>= 1)
-            {
-                if (BSNumber<UIntegerType>::LessThanIgnoreSign(n, d))
+                int digit = static_cast<int>(number[i]) - static_cast<int>('0');
+                if (digit > 0)
                 {
-                    n = two * n;
+                     y += BSRational(digit) / pow10;
                 }
-                else
-                {
-                    n = two * (n - d);
-                    w |= mask;
-                }
+                pow10 *= ten;
             }
-
-            // Apply the mode round-to-nearest-ties-to-even to decide whether
-            // to round down or up.  We computed w = w_{imax} ... w_0.  The
-            // remainder is n/d = w_{imax+1}.w_{imax+2}... in [0,2).  Compute
-            // n'/d = (n-d)/d in [-1,1).  Round-to-nearest-ties-to-even mode
-            // is the following, where we need only test the sign of n'.  A
-            // remainder of "half" is the case n' = 0.
-            //   Round down when n' < 0 or (n' = 0 and w_0 = 0):  use w
-            //   Round up when n' > 0 or (n' = 0 and w_0 == 1):  use w+1
-            n = n - d;
-            if (n.mSign > 0 || (n.mSign == 0 && (w & 1) == 1))
-            {
-                ++w;
-            }
-
-            if (w > 0)
-            {
-                // Ensure that the low-order bit of w is 1, which is required
-                // for the BSNumber integer part.
-                int32_t trailing = BitHacks::GetTrailingBit(w);
-                w >>= trailing;
-                pmq += trailing;
-
-                // Compute a BSNumber with integer part w and the appropriate
-                // number of bits and exponents.
-                BSNumber<UIntegerType> result(w);
-                result.mBiasedExponent = pmq - imax;
-                RealType converted = (RealType)result;
-                if (sign < 0)
-                {
-                    converted = -converted;
-                }
-                return converted;
-            }
-            else
-            {
-                return (RealType)0;
-            }
+            return y;
         }
 
 #if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
@@ -576,10 +584,170 @@ namespace gte
     private:
 #endif
 
-        BSNumber<UIntegerType> mNumerator, mDenominator;
-
-        friend class UnitTestBSRational;
+        BSNumber<UInteger> mNumerator, mDenominator;
     };
+
+
+    // Explicit conversion to a user-specified precision. The rounding
+    // mode is one of the flags provided in <cfenv>. The modes are
+    //   FE_TONEAREST:  round to nearest ties to even
+    //   FE_DOWNWARD:   round towards negative infinity
+    //   FE_TOWARDZERO: round towards zero
+    //   FE_UPWARD:     round towards positive infinity
+    template <typename UInteger>
+    void Convert(BSRational<UInteger> const& input, int32_t precision,
+        int32_t roundingMode, BSNumber<UInteger>& output)
+    {
+        if (precision <= 0)
+        {
+            LogError("Precision must be positive.");
+        }
+
+        int64_t const maxSize = static_cast<int64_t>(UInteger::GetMaxSize());
+        int64_t const excess = 32LL * maxSize - static_cast<int64_t>(precision);
+        if (excess <= 0)
+        {
+            LogError("The maximum precision has been exceeded.");
+        }
+
+        if (input.GetSign() == 0)
+        {
+            output = BSNumber<UInteger>(0);
+            return;
+        }
+
+        BSNumber<UInteger> n = input.GetNumerator();
+        BSNumber<UInteger> d = input.GetDenominator();
+
+        // The ratio is abstractly of the form n/d = (1.u*2^p)/(1.v*2^q).
+        // Convert to the form
+        //   (1.u/1.v)*2^{p-q}, if 1.u >= 1.v
+        //   2*(1.u/1.v)*2^{p-q-1} if 1.u < 1.v
+        // which are in the interval [1,2).
+        int32_t sign = n.GetSign() * d.GetSign();
+        n.SetSign(1);
+        d.SetSign(1);
+        int32_t pmq = n.GetExponent() - d.GetExponent();
+        n.SetExponent(0);
+        d.SetExponent(0);
+        if (n < d)
+        {
+            n.SetExponent(n.GetExponent() + 1);
+            --pmq;
+        }
+
+        // Let p = precision. At this time, n/d = 1.c in [1,2). Define the
+        // sequence of bits w = 1c = w_{p-1} w_{p-2} ... w_0 r, where
+        // w_{p-1} = 1. The bits r after w_0 are used for rounding based on
+        // the user-specified rounding mode.
+
+        // Compute p bits for w, the leading bit guaranteed to be 1 and
+        // occurring at index (1 << (precision-1)).
+        BSNumber<UInteger> one(1), two(2);
+        UInteger& w = output.GetUInteger();
+        w.SetNumBits(precision);
+        w.SetAllBitsToZero();
+        int32_t const size = w.GetSize();
+        int32_t const precisionM1 = precision - 1;
+        int32_t const leading = precisionM1 % 32;
+        uint32_t mask = (1 << leading);
+        auto& bits = w.GetBits();
+        int32_t current = size - 1;
+        int32_t lastBit = -1;
+        for (int i = precisionM1; i >= 0; --i)
+        {
+            if (n < d)
+            {
+                n = two * n;
+                lastBit = 0;
+            }
+            else
+            {
+                n = two * (n - d);
+                bits[current] |= mask;
+                lastBit = 1;
+            }
+
+            if (mask == 0x00000001u)
+            {
+                --current;
+                mask = 0x80000000u;
+            }
+            else
+            {
+                mask >>= 1;
+            }
+        }
+
+        // At this point as a sequence of bits, r = n/d = r0 r1 ...
+        if (roundingMode == FE_TONEAREST)
+        {
+            n = n - d;
+            if (n.GetSign() > 0 || (n.GetSign() == 0 && lastBit == 1))
+            {
+                // round up
+                pmq += w.RoundUp();
+            }
+            // else round down, equivalent to truncating the r bits
+        }
+        else if (roundingMode == FE_UPWARD)
+        {
+            if (n.GetSign() > 0 && sign > 0)
+            {
+                // round up
+                pmq += w.RoundUp();
+            }
+            // else round down, equivalent to truncating the r bits
+        }
+        else if (roundingMode == FE_DOWNWARD)
+        {
+            if (n.GetSign() > 0 && sign < 0)
+            {
+                // Round down. This is the round-up operation applied to
+                // w, but the final sign is negative which amounts to
+                // rounding down.
+                pmq += w.RoundUp();
+            }
+            // else round down, equivalent to truncating the r bits
+        }
+        else if (roundingMode != FE_TOWARDZERO)
+        {
+            // Currently, no additional implementation-dependent modes
+            // are supported for rounding.
+            LogError("Implementation-dependent rounding mode not supported.");
+        }
+        // else roundingMode == FE_TOWARDZERO. Truncate the r bits, which
+        // requires no additional work.
+
+        // Do not use SetExponent(pmq) at this step. The number of
+        // requested bits is 'precision' but w.GetNumBits() will be
+        // different when round-up occurs, and SetExponent accesses
+        // w.GetNumBits().
+        output.SetSign(sign);
+        output.SetBiasedExponent(pmq - precisionM1);
+    }
+
+    // This conversion is used to avoid having to expose BSNumber in the
+    // APConversion class as well as other places where BSRational<UInteger>
+    // is passed via a template parameter named Rational.
+    template <typename UInteger>
+    void Convert(BSRational<UInteger> const& input, int32_t precision,
+        int32_t roundingMode, BSRational<UInteger>& output)
+    {
+        BSNumber<UInteger> numerator;
+        Convert(input, precision, roundingMode, numerator);
+        output = BSRational<UInteger>(numerator);
+    }
+
+    // Convert to 'float' or 'double' using the specified rounding mode.
+    template <typename UInteger, typename FPType>
+    void Convert(BSRational<UInteger> const& input, int32_t roundingMode, FPType& output)
+    {
+        static_assert(std::is_floating_point<FPType>::value, "Invalid floating-point type.");
+        BSNumber<UInteger> number;
+        Convert(input, std::numeric_limits<FPType>::digits, roundingMode, number);
+        output = static_cast<FPType>(number);
+    }
 }
 
 namespace std
@@ -587,100 +755,100 @@ namespace std
     // TODO: Allow for implementations of the math functions in which a
     // specified precision is used when computing the result.
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> acos(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> acos(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::acos((double)x);
+        return (gte::BSRational<UInteger>)std::acos((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> acosh(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> acosh(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::acosh((double)x);
+        return (gte::BSRational<UInteger>)std::acosh((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> asin(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> asin(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::asin((double)x);
+        return (gte::BSRational<UInteger>)std::asin((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> asinh(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> asinh(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::asinh((double)x);
+        return (gte::BSRational<UInteger>)std::asinh((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> atan(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> atan(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::atan((double)x);
+        return (gte::BSRational<UInteger>)std::atan((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> atanh(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> atanh(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::atanh((double)x);
+        return (gte::BSRational<UInteger>)std::atanh((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> atan2(gte::BSRational<UIntegerType> const& y, gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> atan2(gte::BSRational<UInteger> const& y, gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::atan2((double)y, (double)x);
+        return (gte::BSRational<UInteger>)std::atan2((double)y, (double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> ceil(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> ceil(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::ceil((double)x);
+        return (gte::BSRational<UInteger>)std::ceil((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> cos(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> cos(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::cos((double)x);
+        return (gte::BSRational<UInteger>)std::cos((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> cosh(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> cosh(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::cosh((double)x);
+        return (gte::BSRational<UInteger>)std::cosh((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> exp(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> exp(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::exp((double)x);
+        return (gte::BSRational<UInteger>)std::exp((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> exp2(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> exp2(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::exp2((double)x);
+        return (gte::BSRational<UInteger>)std::exp2((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> fabs(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> fabs(gte::BSRational<UInteger> const& x)
     {
         return (x.GetSign() >= 0 ? x : -x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> floor(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> floor(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::floor((double)x);
+        return (gte::BSRational<UInteger>)std::floor((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> fmod(gte::BSRational<UIntegerType> const& x, gte::BSRational<UIntegerType> const& y)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> fmod(gte::BSRational<UInteger> const& x, gte::BSRational<UInteger> const& y)
     {
-        return (gte::BSRational<UIntegerType>)std::fmod((double)x, (double)y);
+        return (gte::BSRational<UInteger>)std::fmod((double)x, (double)y);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> frexp(gte::BSRational<UIntegerType> const& x, int* exponent)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> frexp(gte::BSRational<UInteger> const& x, int* exponent)
     {
-        gte::BSRational<UIntegerType> result = x;
+        gte::BSRational<UInteger> result = x;
         auto& numer = result.GetNumerator();
         auto& denom = result.GetDenominator();
         int32_t e = numer.GetExponent() - denom.GetExponent();
@@ -698,148 +866,148 @@ namespace std
         return result;
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> ldexp(gte::BSRational<UIntegerType> const& x, int exponent)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> ldexp(gte::BSRational<UInteger> const& x, int exponent)
     {
-        gte::BSRational<UIntegerType> result = x;
+        gte::BSRational<UInteger> result = x;
         int biasedExponent = result.GetNumerator().GetBiasedExponent();
         biasedExponent += exponent;
         result.GetNumerator().SetBiasedExponent(biasedExponent);
         return result;
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> log(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> log(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::log((double)x);
+        return (gte::BSRational<UInteger>)std::log((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> log2(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> log2(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::log2((double)x);
+        return (gte::BSRational<UInteger>)std::log2((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> log10(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> log10(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::log10((double)x);
+        return (gte::BSRational<UInteger>)std::log10((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> pow(gte::BSRational<UIntegerType> const& x, gte::BSRational<UIntegerType> const& y)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> pow(gte::BSRational<UInteger> const& x, gte::BSRational<UInteger> const& y)
     {
-        return (gte::BSRational<UIntegerType>)std::pow((double)x, (double)y);
+        return (gte::BSRational<UInteger>)std::pow((double)x, (double)y);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> sin(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> sin(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::sin((double)x);
+        return (gte::BSRational<UInteger>)std::sin((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> sinh(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> sinh(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::sinh((double)x);
+        return (gte::BSRational<UInteger>)std::sinh((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> sqrt(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> sqrt(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::sqrt((double)x);
+        return (gte::BSRational<UInteger>)std::sqrt((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> tan(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> tan(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::tan((double)x);
+        return (gte::BSRational<UInteger>)std::tan((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSRational<UIntegerType> tanh(gte::BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> tanh(gte::BSRational<UInteger> const& x)
     {
-        return (gte::BSRational<UIntegerType>)std::tanh((double)x);
+        return (gte::BSRational<UInteger>)std::tanh((double)x);
     }
 
     // Type trait that says BSRational is a signed type.
-    template <typename UIntegerType>
-    struct is_signed<gte::BSRational<UIntegerType>> : true_type {};
+    template <typename UInteger>
+    struct is_signed<gte::BSRational<UInteger>> : true_type {};
 }
 
 namespace gte
 {
-    template <typename UIntegerType>
-    inline BSRational<UIntegerType> atandivpi(BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSRational<UInteger> atandivpi(BSRational<UInteger> const& x)
     {
-        return (BSRational<UIntegerType>)atandivpi((double)x);
+        return (BSRational<UInteger>)atandivpi((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSRational<UIntegerType> atan2divpi(BSRational<UIntegerType> const& y, BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSRational<UInteger> atan2divpi(BSRational<UInteger> const& y, BSRational<UInteger> const& x)
     {
-        return (BSRational<UIntegerType>)atan2divpi((double)y, (double)x);
+        return (BSRational<UInteger>)atan2divpi((double)y, (double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSRational<UIntegerType> clamp(BSRational<UIntegerType> const& x, BSRational<UIntegerType> const& xmin, BSRational<UIntegerType> const& xmax)
+    template <typename UInteger>
+    inline BSRational<UInteger> clamp(BSRational<UInteger> const& x, BSRational<UInteger> const& xmin, BSRational<UInteger> const& xmax)
     {
-        return (BSRational<UIntegerType>)clamp((double)x, (double)xmin, (double)xmax);
+        return (BSRational<UInteger>)clamp((double)x, (double)xmin, (double)xmax);
     }
 
-    template <typename UIntegerType>
-    inline BSRational<UIntegerType> cospi(BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSRational<UInteger> cospi(BSRational<UInteger> const& x)
     {
-        return (BSRational<UIntegerType>)cospi((double)x);
+        return (BSRational<UInteger>)cospi((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSRational<UIntegerType> exp10(BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSRational<UInteger> exp10(BSRational<UInteger> const& x)
     {
-        return (BSRational<UIntegerType>)exp10((double)x);
+        return (BSRational<UInteger>)exp10((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSRational<UIntegerType> invsqrt(BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSRational<UInteger> invsqrt(BSRational<UInteger> const& x)
     {
-        return (BSRational<UIntegerType>)invsqrt((double)x);
+        return (BSRational<UInteger>)invsqrt((double)x);
     }
 
-    template <typename UIntegerType>
-    inline int isign(BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline int isign(BSRational<UInteger> const& x)
     {
         return isign((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSRational<UIntegerType> saturate(BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSRational<UInteger> saturate(BSRational<UInteger> const& x)
     {
-        return (BSRational<UIntegerType>)saturate((double)x);
+        return (BSRational<UInteger>)saturate((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSRational<UIntegerType> sign(BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSRational<UInteger> sign(BSRational<UInteger> const& x)
     {
-        return (BSRational<UIntegerType>)sign((double)x);
+        return (BSRational<UInteger>)sign((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSRational<UIntegerType> sinpi(BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSRational<UInteger> sinpi(BSRational<UInteger> const& x)
     {
-        return (BSRational<UIntegerType>)sinpi((double)x);
+        return (BSRational<UInteger>)sinpi((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSRational<UIntegerType> sqr(BSRational<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSRational<UInteger> sqr(BSRational<UInteger> const& x)
     {
-        return (BSRational<UIntegerType>)sqr((double)x);
+        return (BSRational<UInteger>)sqr((double)x);
     }
 
     // See the comments in Math.h about traits is_arbitrary_precision
     // and has_division_operator.
-    template <typename UIntegerType>
-    struct is_arbitrary_precision_internal<BSRational<UIntegerType>> : std::true_type {};
+    template <typename UInteger>
+    struct is_arbitrary_precision_internal<BSRational<UInteger>> : std::true_type {};
 
-    template <typename UIntegerType>
-    struct has_division_operator_internal<BSRational<UIntegerType>> : std::true_type {};
+    template <typename UInteger>
+    struct has_division_operator_internal<BSRational<UInteger>> : std::true_type {};
 }

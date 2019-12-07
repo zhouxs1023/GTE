@@ -3,14 +3,14 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.09.14
 
 #pragma once
 
 #include <Mathematics/Logger.h>
 
 // Class QFNumber is an implementation for quadratic fields with N >= 1
-// square root terms.  The theory and details are provided in
+// square root terms. The theory and details are provided in
 // https://www.geometrictools.com/Documentation/QuadraticFields.pdf
 
 // Enable this macro if you want the logging system to trap when arithmetic
@@ -20,7 +20,7 @@
 
 namespace gte
 {
-    // Arithmetic for quadratic fields with N >= 2 square root terms.  The
+    // Arithmetic for quadratic fields with N >= 2 square root terms. The
     // d-term is rational and the x-coefficients are elements in a quadratic
     // field with N-1 >= 1 square root terms.
     template <typename T, size_t N>
@@ -51,16 +51,18 @@ namespace gte
             static_assert(N >= 2, "Invalid number of root arguments.");
         }
 
-        // Create z = x0 + x1 * sqrt(d), where the u-coefficients are
+        // Create z = x0 + x1 * sqrt(d), where the x-coefficients are
         // quadratic field elements with N-1 d-terms.
         QFNumber(QFNumber<T, N - 1> const& x0, QFNumber<T, N - 1> const& x1, T const& inD)
             :
-            x({ x0, x1 }),
+            x{ x0, x1 },
             d(inD)
         {
             static_assert(N >= 2, "Invalid number of root arguments.");
         }
 
+        // Create z = inX[0] + inX[1] * sqrt(inD), where the x-coefficients are
+        // quadratic field elements with N-1 d-terms.
         QFNumber(std::array<QFNumber<T, N - 1>, 2> const& inX, T const& inD)
             :
             x(inX),
@@ -79,10 +81,10 @@ namespace gte
         std::array<T, 2> x;
         T d;
 
-        // Create z = 0.  You can defer the setting of d until later.
+        // Create z = 0. You can defer the setting of d until later.
         QFNumber()
             :
-            x({ static_cast<T>(0), static_cast<T>(0) }),
+            x{ static_cast<T>(0), static_cast<T>(0) },
             d(static_cast<T>(0))
         {
         }
@@ -90,7 +92,7 @@ namespace gte
         // Create z = 0 + 0 * sqrt(d) = 0.
         explicit QFNumber(T const& inD)
             :
-            x({ static_cast<T>(0), static_cast<T>(0) }),
+            x{ static_cast<T>(0), static_cast<T>(0) },
             d(inD)
         {
         }
@@ -103,7 +105,7 @@ namespace gte
         {
         }
 
-        // Create z = x0 + x1 * sqrt(d).
+        // Create z = inX[0] + inX[1] * sqrt(d).
         QFNumber(std::array<T, 2> const& inX, T const& inD)
             :
             x(inX),
@@ -128,7 +130,7 @@ namespace gte
     }
 
     // Arithmetic operations between elements of a quadratic field must occur
-    // only when the d-values are the same.  To trap mismatches, read the
+    // only when the d-values are the same. To trap mismatches, read the
     // comments at the beginning of this file.
     template <typename T, size_t N>
     QFNumber<T, N> operator+(QFNumber<T, N> const& q0, QFNumber<T, N> const& q1)
@@ -224,7 +226,7 @@ namespace gte
     }
 
     // Arithmetic updates between elements of a quadratic field must occur
-    // only when the d-values are the same.  To trap mismatches, read the
+    // only when the d-values are the same. To trap mismatches, read the
     // comments at the beginning of this file.
     template <typename T, size_t N>
     QFNumber<T, N>& operator+=(QFNumber<T, N>& q0, QFNumber<T, N> const& q1)
@@ -306,7 +308,7 @@ namespace gte
     }
 
     // Comparisons between numbers of a quadratic field must occur only when
-    // the d-values are the same.  To trap mismatches, read the comments at
+    // the d-values are the same. To trap mismatches, read the comments at
     // the beginning of this file.
     template <typename T, size_t N>
     bool operator==(QFNumber<T, N> const& q0, QFNumber<T, N> const& q1)
@@ -324,7 +326,7 @@ namespace gte
             {
                 return false;
             }
-            else
+            else // q0.x[0] < q1.x[0]
             {
                 auto diff = q0 - q1;
                 return diff.x[0] * diff.x[0] == diff.x[1] * diff.x[1] * diff.d;
@@ -336,7 +338,7 @@ namespace gte
             {
                 return false;
             }
-            else
+            else // q0.x[0] > q1.x[0]
             {
                 auto diff = q0 - q1;
                 return diff.x[0] * diff.x[0] == diff.x[1] * diff.x[1] * diff.d;
@@ -347,37 +349,7 @@ namespace gte
     template <typename T, size_t N>
     bool operator!=(QFNumber<T, N> const& q0, QFNumber<T, N> const& q1)
     {
-#if defined(GTE_ASSERT_ON_QFNUMBER_MISMATCHED_D)
-        LogAssert(q0.d == q1.d, "Mismatched d-value.");
-#endif
-        if (q0.d == T(0) || q0.x[1] == q1.x[1])
-        {
-            return q0.x[0] != q1.x[0];
-        }
-        else if (q0.x[1] > q1.x[1])
-        {
-            if (q0.x[0] >= q1.x[0])
-            {
-                return true;
-            }
-            else
-            {
-                auto diff = q0 - q1;
-                return diff.x[0] * diff.x[0] != diff.x[1] * diff.x[1] * diff.d;
-            }
-        }
-        else // q0.x[1] < q1.x[1]
-        {
-            if (q0.x[0] <= q1.x[0])
-            {
-                return true;
-            }
-            else
-            {
-                auto diff = q0 - q1;
-                return diff.x[0] * diff.x[0] != diff.x[1] * diff.x[1] * diff.d;
-            }
-        }
+        return !operator==(q0, q1);
     }
 
     template <typename T, size_t N>
@@ -396,7 +368,7 @@ namespace gte
             {
                 return false;
             }
-            else
+            else // q0.x[0] < q1.x[0]
             {
                 auto diff = q0 - q1;
                 return diff.x[0] * diff.x[0] > diff.x[1] * diff.x[1] * diff.d;
@@ -408,7 +380,7 @@ namespace gte
             {
                 return true;
             }
-            else
+            else // q0.x[0] > q1.x[0]
             {
                 auto diff = q0 - q1;
                 return diff.x[0] * diff.x[0] < diff.x[1] * diff.x[1] * diff.d;
@@ -419,108 +391,18 @@ namespace gte
     template <typename T, size_t N>
     bool operator>(QFNumber<T, N> const& q0, QFNumber<T, N> const& q1)
     {
-#if defined(GTE_ASSERT_ON_QFNUMBER_MISMATCHED_D)
-        LogAssert(q0.d == q1.d, "Mismatched d-value.");
-#endif
-        if (q0.d == T(0) || q0.x[1] == q1.x[1])
-        {
-            return q0.x[0] > q1.x[0];
-        }
-        else if (q0.x[1] > q1.x[1])
-        {
-            if (q0.x[0] >= q1.x[0])
-            {
-                return true;
-            }
-            else
-            {
-                auto diff = q0 - q1;
-                return diff.x[0] * diff.x[0] < diff.x[1] * diff.x[1] * diff.d;
-            }
-        }
-        else // q0.x[1] < q1.x[1]
-        {
-            if (q0.x[0] <= q1.x[0])
-            {
-                return false;
-            }
-            else
-            {
-                auto diff = q0 - q1;
-                return diff.x[0] * diff.x[0] > diff.x[1] * diff.x[1] * diff.d;
-            }
-        }
+        return operator<(q1, q0);
     }
 
     template <typename T, size_t N>
     bool operator<=(QFNumber<T, N> const& q0, QFNumber<T, N> const& q1)
     {
-#if defined(GTE_ASSERT_ON_QFNUMBER_MISMATCHED_D)
-        LogAssert(q0.d == q1.d, "Mismatched d-value.");
-#endif
-        if (q0.d == T(0) || q0.x[1] == q1.x[1])
-        {
-            return q0.x[0] <= q1.x[0];
-        }
-        else if (q0.x[1] > q1.x[1])
-        {
-            if (q0.x[0] >= q1.x[0])
-            {
-                return false;
-            }
-            else
-            {
-                auto diff = q0 - q1;
-                return diff.x[0] * diff.x[0] >= diff.x[1] * diff.x[1] * diff.d;
-            }
-        }
-        else // q0.x[1] < q1.x[1]
-        {
-            if (q0.x[0] <= q1.x[0])
-            {
-                return true;
-            }
-            else
-            {
-                auto diff = q0 - q1;
-                return diff.x[0] * diff.x[0] <= diff.x[1] * diff.x[1] * diff.d;
-            }
-        }
+        return !operator<(q1, q0);
     }
 
     template <typename T, size_t N>
     bool operator>=(QFNumber<T, N> const& q0, QFNumber<T, N> const& q1)
     {
-#if defined(GTE_ASSERT_ON_QFNUMBER_MISMATCHED_D)
-        LogAssert(q0.d == q1.d, "Mismatched d-value.");
-#endif
-        if (q0.d == T(0) || q0.x[1] == q1.x[1])
-        {
-            return q0.x[0] >= q1.x[0];
-        }
-        else if (q0.x[1] > q1.x[1])
-        {
-            if (q0.x[0] >= q1.x[0])
-            {
-                return true;
-            }
-            else
-            {
-                auto diff = q0 - q1;
-                return diff.x[0] * diff.x[0] <= diff.x[1] * diff.x[1] * diff.d;
-            }
-        }
-        else // q0.x[1] < q1.x[1]
-        {
-            if (q0.x[0] <= q1.x[0])
-            {
-                return false;
-            }
-            else
-            {
-                auto diff = q0 - q1;
-                return diff.x[0] * diff.x[0] >= diff.x[1] * diff.x[1] * diff.d;
-            }
-        }
+        return !operator<(q0, q1);
     }
 }

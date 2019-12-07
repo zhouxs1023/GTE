@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.09.11
 
 #pragma once
 
@@ -89,18 +89,6 @@ namespace gte
             }
         }
 
-        UIntegerFP32(int numBits)
-            :
-            mNumBits(numBits),
-            mSize(1 + (numBits - 1) / 32)
-        {
-            static_assert(N >= 1, "Invalid size N.");
-
-#if defined(GTE_THROW_ON_UINTEGERFP32_OUT_OF_RANGE)
-            LogAssert(mSize <= N, "N not large enough to store number of bits.");
-#endif
-        }
-
         // Assignment.  Only mSize elements are copied.
         UIntegerFP32& operator=(UIntegerFP32 const& number)
         {
@@ -136,10 +124,22 @@ namespace gte
         }
 
         // Member access.
-        void SetNumBits(uint32_t numBits)
+        void SetNumBits(int32_t numBits)
         {
-            mNumBits = numBits;
-            mSize = 1 + (numBits - 1) / 32;
+            if (numBits > 0)
+            {
+                mNumBits = numBits;
+                mSize = 1 + (numBits - 1) / 32;
+            }
+            else if (numBits == 0)
+            {
+                mNumBits = 0;
+                mSize = 0;
+            }
+            else
+            {
+                LogError("The number of bits must be nonnegative.");
+            }
 
 #if defined(GTE_THROW_ON_UINTEGERFP32_OUT_OF_RANGE)
             LogAssert(mSize <= N, "N not large enough to store number of bits.");
@@ -174,6 +174,16 @@ namespace gte
         inline int32_t GetSize() const
         {
             return mSize;
+        }
+
+        inline static int32_t GetMaxSize()
+        {
+            return N;
+        }
+
+        inline void SetAllBitsToZero()
+        {
+            std::fill(mBits.begin(), mBits.end(), 0u);
         }
 
         // Disk input/output.  The fstream objects should be created using
@@ -212,8 +222,5 @@ namespace gte
     private:
         int32_t mNumBits, mSize;
         std::array<uint32_t, N> mBits;
-
-        // TODO:  Is this needed any longer in the unit test harness?
-        friend class UnitTestBSNumber;
     };
 }

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.09.14
 
 #pragma once
 
@@ -16,8 +16,8 @@ namespace gte
     {
     public:
         // For generic access of the template types.
-        typedef Float FloatType;
-        typedef UInt UIntType;
+        using FloatType = Float;
+        using UIntType = UInt;
 
         // Construction from an encoding.  Copy constructor, destructor, and
         // assignment operator are implicitly generated.  For the 3-parameter
@@ -369,6 +369,6 @@ namespace gte
         };
     };
 
-    typedef IEEEBinary<float, uint32_t, 32, 24> IEEEBinary32;
-    typedef IEEEBinary<double, uint64_t, 64, 53> IEEEBinary64;
+    using IEEEBinary32 = IEEEBinary<float, uint32_t, 32, 24>;
+    using IEEEBinary64 = IEEEBinary<double, uint64_t, 64, 53>;
 }

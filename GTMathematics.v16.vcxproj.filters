@@ -1395,5 +1395,11 @@
     <ClInclude Include="Mathematics\StringUtility.h">
       <Filter>LowLevel</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\APInterval.h">
+      <Filter>Arithmetic</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\FPInterval.h">
+      <Filter>Arithmetic</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

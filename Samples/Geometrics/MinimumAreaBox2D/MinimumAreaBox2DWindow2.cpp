@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.12.05
 
 #include "MinimumAreaBox2DWindow2.h"
 #include <Mathematics/ArbitraryPrecision.h>
@@ -34,7 +34,6 @@ MinimumAreaBox2DWindow2::MinimumAreaBox2DWindow2(Parameters& parameters)
     Vector2<float> axis[2] = { { 1.0f, 1.0f }, { -1.0f, 1.0f } };
     Normalize(axis[0]);
     Normalize(axis[1]);
-    rnd(mte);
     int const numVertices = 256;
     mVertices.resize(numVertices);
     for (auto& v : mVertices)

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.11.03
 
 #pragma once
 
@@ -13,47 +13,48 @@
 
 // The class BSNumber (binary scientific number) is designed to provide exact
 // arithmetic for robust algorithms, typically those for which we need to know
-// the exact sign of determinants.  The template parameter UIntegerType must
-// have support for at least the following public interface.  The fstream
-// objects for Write/Read must be created using std::ios::binary.  The return
+// the exact sign of determinants. The template parameter UInteger must
+// have support for at least the following public interface. The fstream
+// objects for Write/Read must be created using std::ios::binary. The return
 // value of Write/Read is 'true' iff the operation was successful.
 //
-//      class UIntegerType
+//      class UInteger
 //      {
 //      public:
-//          UIntegerType();
-//          UIntegerType(UIntegerType const& number);
-//          UIntegerType(uint32_t number);
-//          UIntegerType(uint64_t number);
-//          UIntegerType(int numBits);
-//          UIntegerType& operator=(UIntegerType const& number);
-//          UIntegerType(UIntegerType&& number);
-//          UIntegerType& operator=(UIntegerType&& number);
+//          UInteger();
+//          UInteger(UInteger const& number);
+//          UInteger(uint32_t number);
+//          UInteger(uint64_t number);
+//          UInteger& operator=(UInteger const& number);
+//          UInteger(UInteger&& number);
+//          UInteger& operator=(UInteger&& number);
+//          void SetNumBits(int numBits);
 //          int32_t GetNumBits() const;
-//          bool operator==(UIntegerType const& number) const;
-//          bool operator< (UIntegerType const& number) const;
-//          void Add(UIntegerType const& n0, UIntegerType const& n1);
-//          void Sub(UIntegerType const& n0, UIntegerType const& n1);
-//          void Mul(UIntegerType const& n0, UIntegerType const& n1);
-//          void ShiftLeft(UIntegerType const& number, int shift);
-//          int32_t ShiftRightToOdd(UIntegerType const& number);
+//          bool operator==(UInteger const& number) const;
+//          bool operator< (UInteger const& number) const;
+//          void Add(UInteger const& n0, UInteger const& n1);
+//          void Sub(UInteger const& n0, UInteger const& n1);
+//          void Mul(UInteger const& n0, UInteger const& n1);
+//          void ShiftLeft(UInteger const& number, int shift);
+//          int32_t ShiftRightToOdd(UInteger const& number);
+//          int32_t RoundUp();
 //          uint64_t GetPrefix(int numRequested) const;
 //          bool Write(std::ofstream& output) const;
 //          bool Read(std::ifstream& input);
 //      };
 //
-// GTEngine currently has 32-bits-per-word storage for UIntegerType.  See the
+// GTEngine currently has 32-bits-per-word storage for UInteger. See the
 // classes UIntegerAP32 (arbitrary precision), UIntegerFP32<N> (fixed
 // precision), and UIntegerALU32 (arithmetic logic unit shared by the previous
-// two classes).  The document at the following link describes the design,
+// two classes). The document at the following link describes the design,
 // implementation, and use of BSNumber and BSRational.
 //   https://www.geometrictools.com/Documentation/ArbitraryPrecision.pdf
 //
-// Support for debugging algorithms that use exact rational arithmetic.  Each
+// Support for debugging algorithms that use exact rational arithmetic. Each
 // BSNumber and BSRational has a double-precision member that is exposed when
-// the conditional define is enabled.  Be aware that this can be very slow
+// the conditional define is enabled. Be aware that this can be very slow
 // because of the conversion to double-precision whenever new objects are
-// created by arithmetic operations.  As a faster alternative, you can add
+// created by arithmetic operations. As a faster alternative, you can add
 // temporary code in your algorithms that explicitly convert specific rational
 // numbers to double precision.
 //
@@ -65,13 +66,13 @@
 
 namespace gte
 {
-    template <typename UIntegerType> class BSRational;
+    template <typename UInteger> class BSRational;
 
-    template <typename UIntegerType>
+    template <typename UInteger>
     class BSNumber
     {
     public:
-        // Construction.  The default constructor generates the zero BSNumber.
+        // Construction. The default constructor generates the zero BSNumber.
         BSNumber()
             :
             mSign(0),
@@ -193,7 +194,45 @@ namespace gte
 #endif
         }
 
-        // Implicit conversions.
+        // The number must be of the form "x" or "+x" or "-x", where x is a
+        // positive integer with nonzero leading digit.
+        BSNumber(std::string const& number)
+        {
+            LogAssert(number.size() > 0, "A number must be specified.");
+
+            // Get the leading '+' or '-' if it exists.
+            std::string intNumber;
+            int sign;
+            if (number[0] == '+')
+            {
+                intNumber = number.substr(1);
+                sign = +1;
+                LogAssert(intNumber.size() > 1, "Invalid number format.");
+            }
+            else if (number[0] == '-')
+            {
+                intNumber = number.substr(1);
+                sign = -1;
+                LogAssert(intNumber.size() > 1, "Invalid number format.");
+            }
+            else
+            {
+                intNumber = number;
+                sign = +1;
+            }
+
+            *this = ConvertToInteger(intNumber);
+            mSign = sign;
+        }
+
+        BSNumber(char const* number)
+            :
+            BSNumber(std::string(number))
+        {
+        }
+
+        // Implicit conversions. These always use the default rounding mode,
+        // round-to-nearest-ties-to-even.
         inline operator float() const
         {
             return ConvertTo<IEEEBinary32>();
@@ -266,7 +305,12 @@ namespace gte
             return mBiasedExponent + mUInteger.GetNumBits() - 1;
         }
 
-        inline UIntegerType const& GetUInteger() const
+        inline UInteger const& GetUInteger() const
+        {
+            return mUInteger;
+        }
+
+        inline UInteger& GetUInteger()
         {
             return mUInteger;
         }
@@ -512,8 +556,8 @@ namespace gte
             return *this;
         }
 
-        // Disk input/output.  The fstream objects should be created using
-        // std::ios::binary.  The return value is 'true' iff the operation
+        // Disk input/output. The fstream objects should be created using
+        // std::ios::binary. The return value is 'true' iff the operation
         // was successful.
         bool Write(std::ostream& output) const
         {
@@ -547,6 +591,30 @@ namespace gte
         }
 
     private:
+        // Helper for converting a string to a BSNumber. The string must be
+        // valid for a nonnegative integer without a leading '+' sign.
+        static BSNumber ConvertToInteger(std::string const& number)
+        {
+            int digit = static_cast<int>(number.back()) - static_cast<int>('0');
+            BSNumber x(digit);
+            if (number.size() > 1)
+            {
+                LogAssert(number.find_first_of("123456789") == 0, "Invalid number format.");
+                LogAssert(number.find_first_not_of("0123456789") == std::string::npos, "Invalid number format.");
+                BSNumber ten(10), pow10(10);
+                for (size_t i = 1, j = number.size() - 2; i < number.size(); ++i, --j)
+                {
+                    digit = static_cast<int>(number[j]) - static_cast<int>('0');
+                    if (digit > 0)
+                    {
+                        x += BSNumber(digit) * pow10;
+                    }
+                    pow10 *= ten;
+                }
+            }
+            return x;
+        }
+
         // Helpers for operator==, operator<, operator+, operator-.
         static bool EqualIgnoreSign(BSNumber const& n0, BSNumber const& n1)
         {
@@ -685,8 +753,10 @@ namespace gte
                 {
                     // x = (-1)^s * infinity
 #if defined(GTE_THROW_ON_BSNUMBER_ERRORS)
-                    // TODO: This should be a warning, but BSNumber does not
-                    // have a representation for +infinity or -infinity.
+                    // TODO: This should not be a warning, but BSNumber does
+                    // not have a representation for +infinity or -infinity.
+                    // Consider doing so with mSign in {-2,2} and all other
+                    // members zero-valued.
                     LogWarning("Input is " + std::string(s > 0 ? "-" : "+") + "infinity.");
 #else
                     // Return (-1)^s * 2^{1+EXPONENT_BIAS} for a graceful
@@ -700,7 +770,8 @@ namespace gte
                 {
 #if defined(GTE_THROW_ON_BSNUMBER_ERRORS)
                     // TODO: BSNumber does not have a representation for
-                    // NaNs.
+                    // NaNs. Consider doing so with mSign in {-3,3} and a
+                    // payload stored in mBits.
                     LogError("Input is a " +
                         std::string(t & IEEE::NAN_QUIET_MASK ?
                             "quiet" : "signaling") + " NaN with payload " +
@@ -723,14 +794,15 @@ namespace gte
 
             if (mSign != 0)
             {
-                // The conversions use round-to-nearest-ties-to-even semantics.
+                // The conversions use round-to-nearest-ties-to-even
+                // semantics.
                 int32_t exponent = GetExponent();
                 if (exponent < IEEE::MIN_EXPONENT)
                 {
                     if (exponent < IEEE::MIN_EXPONENT - 1
-                        || mUInteger.GetNumBits() == 1)  // x = 1.0*2^{MIN_EXPONENT-1}
+                        || mUInteger.GetNumBits() == 1)
                     {
-                        // Round to zero.
+                        // x = 1.0*2^{MIN_EXPONENT-1}, round to zero.
                         e = 0;
                         t = 0;
                     }
@@ -747,8 +819,8 @@ namespace gte
                     t = GetTrailing<IEEE>(0, IEEE::MIN_SUB_EXPONENT - exponent - 1);
                     if (t & IEEE::SUP_TRAILING)
                     {
-                        // Leading NUM_SIGNIFICAND_BITS bits were all 1, so round to
-                        // min normal.
+                        // Leading NUM_SIGNIFICAND_BITS bits were all 1, so
+                        // round to min normal.
                         e = 1;
                         t = 0;
                     }
@@ -794,15 +866,16 @@ namespace gte
         {
             int32_t const numRequested = IEEE::NUM_SIGNIFICAND_BITS + normal;
 
-            // We need numRequested bits to determine rounding direction.  These are
-            // stored in the high-order bits of 'prefix'.
+            // We need numRequested bits to determine rounding direction.
+            // These are stored in the high-order bits of 'prefix'.
             uint64_t prefix = mUInteger.GetPrefix(numRequested);
 
-            // The first bit index after the implied binary point for rounding.
+            // The first bit index after the implied binary point for
+            // rounding.
             int32_t diff = numRequested - sigma;
             int32_t roundBitIndex = 64 - diff;
 
-            // Determine rounding value based on round-to-nearest-ties-to-even.
+            // Determine value based on round-to-nearest-ties-to-even.
             uint64_t mask = (1ull << roundBitIndex);
             uint64_t round;
             if (prefix & mask)
@@ -810,26 +883,26 @@ namespace gte
                 // The first bit of the remainder is 1.
                 if (mUInteger.GetNumBits() == diff)
                 {
-                    // The first bit of the remainder is the lowest-order bit of
-                    // mBits[0].  Apply the ties-to-even rule.
+                    // The first bit of the remainder is the lowest-order bit
+                    // of mBits[0]. Apply the ties-to-even rule.
                     if (prefix & (mask << 1))
                     {
-                        // The last bit of the trailing significand is odd, so
-                        // round up.
+                        // The last bit of the trailing significand is odd,
+                        // so round up.
                         round = 1;
                     }
                     else
                     {
-                        // The last bit of the trailing significand is even, so
-                        // round down.
+                        // The last bit of the trailing significand is even,
+                        // so round down.
                         round = 0;
                     }
                 }
                 else
                 {
-                    // The first bit of the remainder is not the lowest-order bit of
-                    // mBits[0].  The remainder as a fraction is larger than 1/2, so
-                    // round up.
+                    // The first bit of the remainder is not the lowest-order
+                    // bit of mBits[0].  The remainder as a fraction is larger
+                    // than 1/2, so round up.
                     round = 1;
                 }
             }
@@ -849,22 +922,164 @@ namespace gte
 
 #if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
     public:
-        // List this first so that it shows up first in the debugger watch window.
+        // List this first so that it shows up first in the debugger watch
+        // window.
         double mValue;
     private:
 #endif
 
-        // The number 0 is represented by: mSign = 0, mBiasedExponent = 0, and
-        // mUInteger = 0.  For nonzero numbers, mSign != 0 and mUInteger > 0.
+        // The number 0 is represented by: mSign = 0, mBiasedExponent = 0 and
+        // mUInteger = 0. For nonzero numbers, mSign != 0 and mUInteger > 0.
         int32_t mSign;
         int32_t mBiasedExponent;
-        UIntegerType mUInteger;
+        UInteger mUInteger;
 
-        // Access to members to avoid exposing them publically when they are
-        // needed only internally.
-        friend class BSRational<UIntegerType>;
-        friend class UnitTestBSNumber;
+        // BSRational depends on the design of BSNumber, so allow it to have
+        // full access to the implementation.
+        friend class BSRational<UInteger>;
     };
+
+
+    // Explicit conversion to a user-specified precision. The rounding
+    // mode is one of the flags provided in <cfenv>. The modes are
+    //   FE_TONEAREST:  round to nearest ties to even
+    //   FE_DOWNWARD:   round towards negative infinity
+    //   FE_TOWARDZERO: round towards zero
+    //   FE_UPWARD:     round towards positive infinity
+    template <typename UInteger>
+    void Convert(BSNumber<UInteger> const& input, int32_t precision,
+        int32_t roundingMode, BSNumber<UInteger>& output)
+    {
+        if (precision <= 0)
+        {
+            LogError("Precision must be positive.");
+        }
+
+        int64_t const maxSize = static_cast<int64_t>(UInteger::GetMaxSize());
+        int64_t const excess = 32LL * maxSize - static_cast<int64_t>(precision);
+        if (excess <= 0)
+        {
+            LogError("The maximum precision has been exceeded.");
+        }
+
+        if (input.GetSign() == 0)
+        {
+            output = BSNumber<UInteger>(0);
+            return;
+        }
+
+        // Let p = precision and n+1 be the number of bits of the input.
+        // Compute n+1-p. If it is nonpositive, then the requested precision
+        // is already satisfied by the input.
+        int32_t np1mp = input.GetUInteger().GetNumBits() - precision;
+        if (np1mp <= 0)
+        {
+            output = input;
+            return;
+        }
+
+        // At this point, the requested number of bits is smaller than the
+        // number of bits in the input. Round the input to the smaller number
+        // of bits using the specified rounding mode.
+        UInteger& outW = output.GetUInteger();
+        outW.SetNumBits(precision);
+        outW.SetAllBitsToZero();
+        int32_t const outSize = outW.GetSize();
+        int32_t const precisionM1 = precision - 1;
+        int32_t const outLeading = precisionM1 % 32;
+        uint32_t outMask = (1 << outLeading);
+        auto& outBits = outW.GetBits();
+        int32_t outCurrent = outSize - 1;
+
+        UInteger const& inW = input.GetUInteger();
+        int32_t const inSize = inW.GetSize();
+        int32_t const inLeading = (inW.GetNumBits() - 1) % 32;
+        uint32_t inMask = (1 << inLeading);
+        auto const& inBits = inW.GetBits();
+        int32_t inCurrent = inSize - 1;
+
+        int32_t lastBit = -1;
+        for (int i = precisionM1; i >= 0; --i)
+        {
+            if (inBits[inCurrent] & inMask)
+            {
+                outBits[outCurrent] |= outMask;
+                lastBit = 1;
+            }
+            else
+            {
+                lastBit = 0;
+            }
+
+            if (inMask == 0x00000001u)
+            {
+                --inCurrent;
+                inMask = 0x80000000u;
+            }
+            else
+            {
+                inMask >>= 1;
+            }
+
+            if (outMask == 0x00000001u)
+            {
+                --outCurrent;
+                outMask = 0x80000000u;
+            }
+            else
+            {
+                outMask >>= 1;
+            }
+        }
+
+        // At this point as a sequence of bits, r = u_{n-p} ... u_0.
+        int32_t sign = input.GetSign();
+        int32_t outExponent = input.GetExponent();
+        if (roundingMode == FE_TONEAREST)
+        {
+            // Determine whether u_{n-p} is positive.
+            uint32_t positive = (inBits[inCurrent] & inMask) != 0u;
+            if (positive && (np1mp > 1 || lastBit == 1))
+            {
+                // round up
+                outExponent += outW.RoundUp();
+            }
+            // else round down, equivalent to truncating the r bits
+        }
+        else if (roundingMode == FE_UPWARD)
+        {
+            // The remainder r must be positive because n-p >= 0 and u_0 = 1.
+            if (sign > 0)
+            {
+                // round up
+                outExponent += outW.RoundUp();
+            }
+            // else round down, equivalent to truncating the r bits
+        }
+        else if (roundingMode == FE_DOWNWARD)
+        {
+            // The remainder r must be positive because n-p >= 0 and u_0 = 1.
+            if (sign < 0)
+            {
+                // Round down. This is the round-up operation applied to
+                // w, but the final sign is negative which amounts to
+                // rounding down.
+                outExponent += outW.RoundUp();
+            }
+            // else round down, equivalent to truncating the r bits
+        }
+        else if (roundingMode != FE_TOWARDZERO)
+        {
+            // Currently, no additional implementation-dependent modes
+            // are supported for rounding.
+            LogError("Implementation-dependent rounding mode not supported.");
+        }
+        // else roundingMode == FE_TOWARDZERO. Truncate the r bits, which
+        // requires no additional work.
+
+        output.SetSign(sign);
+        output.SetBiasedExponent(outExponent - precisionM1);
+    }
 }
 
 namespace std
@@ -872,102 +1087,102 @@ namespace std
     // TODO: Allow for implementations of the math functions in which a
     // specified precision is used when computing the result.
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> acos(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> acos(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::acos((double)x);
+        return (gte::BSNumber<UInteger>)std::acos((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> acosh(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> acosh(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::acosh((double)x);
+        return (gte::BSNumber<UInteger>)std::acosh((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> asin(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> asin(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::asin((double)x);
+        return (gte::BSNumber<UInteger>)std::asin((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> asinh(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> asinh(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::asinh((double)x);
+        return (gte::BSNumber<UInteger>)std::asinh((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> atan(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> atan(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::atan((double)x);
+        return (gte::BSNumber<UInteger>)std::atan((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> atanh(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> atanh(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::atanh((double)x);
+        return (gte::BSNumber<UInteger>)std::atanh((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> atan2(gte::BSNumber<UIntegerType> const& y, gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> atan2(gte::BSNumber<UInteger> const& y, gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::atan2((double)y, (double)x);
+        return (gte::BSNumber<UInteger>)std::atan2((double)y, (double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> ceil(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> ceil(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::ceil((double)x);
+        return (gte::BSNumber<UInteger>)std::ceil((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> cos(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> cos(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::cos((double)x);
+        return (gte::BSNumber<UInteger>)std::cos((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> cosh(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> cosh(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::cosh((double)x);
+        return (gte::BSNumber<UInteger>)std::cosh((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> exp(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> exp(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::exp((double)x);
+        return (gte::BSNumber<UInteger>)std::exp((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> exp2(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> exp2(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::exp2((double)x);
+        return (gte::BSNumber<UInteger>)std::exp2((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> fabs(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> fabs(gte::BSNumber<UInteger> const& x)
     {
         return (x.GetSign() >= 0 ? x : -x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> floor(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> floor(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::floor((double)x);
+        return (gte::BSNumber<UInteger>)std::floor((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> fmod(gte::BSNumber<UIntegerType> const& x, gte::BSNumber<UIntegerType> const& y)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> fmod(gte::BSNumber<UInteger> const& x, gte::BSNumber<UInteger> const& y)
     {
-        return (gte::BSNumber<UIntegerType>)std::fmod((double)x, (double)y);
+        return (gte::BSNumber<UInteger>)std::fmod((double)x, (double)y);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> frexp(gte::BSNumber<UIntegerType> const& x, int* exponent)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> frexp(gte::BSNumber<UInteger> const& x, int* exponent)
     {
         if (x.GetSign() != 0)
         {
-            gte::BSNumber<UIntegerType> result = x;
+            gte::BSNumber<UInteger> result = x;
             *exponent = result.GetExponent() + 1;
             result.SetExponent(-1);
             return result;
@@ -975,146 +1190,146 @@ namespace std
         else
         {
             *exponent = 0;
-            return gte::BSNumber<UIntegerType>(0);
+            return gte::BSNumber<UInteger>(0);
         }
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> ldexp(gte::BSNumber<UIntegerType> const& x, int exponent)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> ldexp(gte::BSNumber<UInteger> const& x, int exponent)
     {
-        gte::BSNumber<UIntegerType> result = x;
+        gte::BSNumber<UInteger> result = x;
         result.SetBiasedExponent(result.GetBiasedExponent() + exponent);
         return result;
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> log(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> log(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::log((double)x);
+        return (gte::BSNumber<UInteger>)std::log((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> log2(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> log2(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::log2((double)x);
+        return (gte::BSNumber<UInteger>)std::log2((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> log10(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> log10(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::log10((double)x);
+        return (gte::BSNumber<UInteger>)std::log10((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> pow(gte::BSNumber<UIntegerType> const& x, gte::BSNumber<UIntegerType> const& y)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> pow(gte::BSNumber<UInteger> const& x, gte::BSNumber<UInteger> const& y)
     {
-        return (gte::BSNumber<UIntegerType>)std::pow((double)x, (double)y);
+        return (gte::BSNumber<UInteger>)std::pow((double)x, (double)y);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> sin(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> sin(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::sin((double)x);
+        return (gte::BSNumber<UInteger>)std::sin((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> sinh(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> sinh(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::sinh((double)x);
+        return (gte::BSNumber<UInteger>)std::sinh((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> sqrt(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> sqrt(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::sqrt((double)x);
+        return (gte::BSNumber<UInteger>)std::sqrt((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> tan(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> tan(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::tan((double)x);
+        return (gte::BSNumber<UInteger>)std::tan((double)x);
     }
 
-    template <typename UIntegerType>
-    inline gte::BSNumber<UIntegerType> tanh(gte::BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> tanh(gte::BSNumber<UInteger> const& x)
     {
-        return (gte::BSNumber<UIntegerType>)std::tanh((double)x);
+        return (gte::BSNumber<UInteger>)std::tanh((double)x);
     }
 
     // Type trait that says BSNumber is a signed type.
-    template <typename UIntegerType>
-    struct is_signed<gte::BSNumber<UIntegerType>> : true_type {};
+    template <typename UInteger>
+    struct is_signed<gte::BSNumber<UInteger>> : true_type {};
 }
 
 namespace gte
 {
-    template <typename UIntegerType>
-    inline BSNumber<UIntegerType> atandivpi(BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSNumber<UInteger> atandivpi(BSNumber<UInteger> const& x)
     {
-        return (BSNumber<UIntegerType>)atandivpi((double)x);
+        return (BSNumber<UInteger>)atandivpi((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSNumber<UIntegerType> atan2divpi(BSNumber<UIntegerType> const& y, BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSNumber<UInteger> atan2divpi(BSNumber<UInteger> const& y, BSNumber<UInteger> const& x)
     {
-        return (BSNumber<UIntegerType>)atan2divpi((double)y, (double)x);
+        return (BSNumber<UInteger>)atan2divpi((double)y, (double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSNumber<UIntegerType> clamp(BSNumber<UIntegerType> const& x, BSNumber<UIntegerType> const& xmin, BSNumber<UIntegerType> const& xmax)
+    template <typename UInteger>
+    inline BSNumber<UInteger> clamp(BSNumber<UInteger> const& x, BSNumber<UInteger> const& xmin, BSNumber<UInteger> const& xmax)
     {
-        return (BSNumber<UIntegerType>)clamp((double)x, (double)xmin, (double)xmax);
+        return (BSNumber<UInteger>)clamp((double)x, (double)xmin, (double)xmax);
     }
 
-    template <typename UIntegerType>
-    inline BSNumber<UIntegerType> cospi(BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSNumber<UInteger> cospi(BSNumber<UInteger> const& x)
     {
-        return (BSNumber<UIntegerType>)cospi((double)x);
+        return (BSNumber<UInteger>)cospi((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSNumber<UIntegerType> exp10(BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSNumber<UInteger> exp10(BSNumber<UInteger> const& x)
     {
-        return (BSNumber<UIntegerType>)exp10((double)x);
+        return (BSNumber<UInteger>)exp10((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSNumber<UIntegerType> invsqrt(BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSNumber<UInteger> invsqrt(BSNumber<UInteger> const& x)
     {
-        return (BSNumber<UIntegerType>)invsqrt((double)x);
+        return (BSNumber<UInteger>)invsqrt((double)x);
     }
 
-    template <typename UIntegerType>
-    inline int isign(BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline int isign(BSNumber<UInteger> const& x)
     {
         return isign((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSNumber<UIntegerType> saturate(BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSNumber<UInteger> saturate(BSNumber<UInteger> const& x)
     {
-        return (BSNumber<UIntegerType>)saturate((double)x);
+        return (BSNumber<UInteger>)saturate((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSNumber<UIntegerType> sign(BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSNumber<UInteger> sign(BSNumber<UInteger> const& x)
     {
-        return (BSNumber<UIntegerType>)sign((double)x);
+        return (BSNumber<UInteger>)sign((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSNumber<UIntegerType> sinpi(BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSNumber<UInteger> sinpi(BSNumber<UInteger> const& x)
     {
-        return (BSNumber<UIntegerType>)sinpi((double)x);
+        return (BSNumber<UInteger>)sinpi((double)x);
     }
 
-    template <typename UIntegerType>
-    inline BSNumber<UIntegerType> sqr(BSNumber<UIntegerType> const& x)
+    template <typename UInteger>
+    inline BSNumber<UInteger> sqr(BSNumber<UInteger> const& x)
     {
-        return (BSNumber<UIntegerType>)sqr((double)x);
+        return (BSNumber<UInteger>)sqr((double)x);
     }
 
     // See the comments in GteMath.h about trait is_arbitrary_precision.
-    template <typename UIntegerType>
-    struct is_arbitrary_precision_internal<BSNumber<UIntegerType>> : std::true_type {};
+    template <typename UInteger>
+    struct is_arbitrary_precision_internal<BSNumber<UInteger>> : std::true_type {};
 }

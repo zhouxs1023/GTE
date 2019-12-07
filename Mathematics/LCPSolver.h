@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.10.04
 
 #pragma once
 
@@ -57,7 +57,39 @@ namespace gte
             mQMin(nullptr),
             mMinRatio(nullptr),
             mRatio(nullptr),
-            mPoly(nullptr)
+            mPoly(nullptr),
+            mZero((Real)0),
+            mOne((Real)1)
+        {
+            if (n > 0)
+            {
+                mDimension = n;
+                mMaxIterations = n * n;
+            }
+            else
+            {
+                mDimension = 0;
+                mMaxIterations = 0;
+            }
+        }
+
+        // Use this constructor when you need a specific representation of
+        // zero and of one to be used when manipulating the polynomials of the
+        // base class. In particular, this is needed to select the correct
+        // zero and correct one for QFNumber objects.
+        LCPSolverShared(int n, Real const& zero, Real const& one)
+            :
+            mNumIterations(0),
+            mVarBasic(nullptr),
+            mVarNonbasic(nullptr),
+            mNumCols(0),
+            mAugmented(nullptr),
+            mQMin(nullptr),
+            mMinRatio(nullptr),
+            mRatio(nullptr),
+            mPoly(nullptr),
+            mZero(zero),
+            mOne(one)
         {
             if (n > 0)
             {
@@ -145,7 +177,7 @@ namespace gte
                 mPoly[r] = &Augmented(r, mDimension + 1);
                 MakeZero(mPoly[r]);
                 mPoly[r][0] = q[r];
-                mPoly[r][r + 1] = (Real)1;
+                mPoly[r][r + 1] = mOne;
             }
 
             // Determine whether there is the trivial solution w = z = 0.
@@ -165,7 +197,7 @@ namespace gte
                 for (int r = 0; r < mDimension; ++r)
                 {
                     w[r] = q[r];
-                    z[r] = (Real)0;
+                    z[r] = mZero;
                 }
 
                 if (result)
@@ -182,7 +214,7 @@ namespace gte
                 {
                     Augmented(r, c) = M[c + mDimension * r];
                 }
-                Augmented(r, mDimension) = (Real)1;
+                Augmented(r, mDimension) = mOne;
             }
 
             // Keep track of when the variables enter and exit the dictionary,
@@ -249,7 +281,7 @@ namespace gte
                         int index = mVarNonbasic[c].index;
                         if (index < mDimension)
                         {
-                            mVarNonbasic[c].tuple[index] = (Real)0;
+                            mVarNonbasic[c].tuple[index] = mZero;
                         }
                     }
                     if (result)
@@ -266,9 +298,9 @@ namespace gte
                 basic = -1;
                 for (int r = 0; r < mDimension; ++r)
                 {
-                    if (Augmented(r, driving) < (Real)0)
+                    if (Augmented(r, driving) < mZero)
                     {
-                        Real factor = (Real)-1 / Augmented(r, driving);
+                        Real factor = -mOne / Augmented(r, driving);
                         Multiply(mPoly[r], factor, mRatio);
                         if (basic == -1 || LessThan(mRatio, mMinRatio))
                         {
@@ -285,8 +317,8 @@ namespace gte
                     // the dictionary.  There is no solution to the LCP.
                     for (int r = 0; r < mDimension; ++r)
                     {
-                        w[r] = (Real)0;
-                        z[r] = (Real)0;
+                        w[r] = mZero;
+                        z[r] = mZero;
                     }
 
                     if (result)
@@ -298,10 +330,10 @@ namespace gte
 
                 // Solve the basic equation so that z[driving] enters the
                 // dictionary and w[basic] exits the dictionary.
-                Real invDenom = (Real)1 / Augmented(basic, driving);
+                Real invDenom = mOne / Augmented(basic, driving);
                 for (int r = 0; r < mDimension; ++r)
                 {
-                    if (r != basic && Augmented(r, driving) != (Real)0)
+                    if (r != basic && Augmented(r, driving) != mZero)
                     {
                         Real multiplier = Augmented(r, driving) * invDenom;
                         for (int c = 0; c < mNumCols; ++c)
@@ -384,7 +416,7 @@ namespace gte
         {
             for (int i = 0; i <= mDimension; ++i)
             {
-                poly[i] = (Real)0;
+                poly[i] = mZero;
             }
         }
 
@@ -418,12 +450,12 @@ namespace gte
         {
             for (int i = 0; i <= mDimension; ++i)
             {
-                if (poly[i] < (Real)0)
+                if (poly[i] < mZero)
                 {
                     return true;
                 }
 
-                if (poly[i] > (Real)0)
+                if (poly[i] > mZero)
                 {
                     return false;
                 }
@@ -458,6 +490,7 @@ namespace gte
         Real* mMinRatio;
         Real* mRatio;
         Real** mPoly;
+        Real mZero, mOne;
     };
 
 
@@ -470,6 +503,24 @@ namespace gte
         LCPSolver()
             :
             LCPSolverShared<Real>(n)
+        {
+            this->mVarBasic = mArrayVarBasic.data();
+            this->mVarNonbasic = mArrayVarNonbasic.data();
+            this->mNumCols = 2 * (n + 1);
+            this->mAugmented = mArrayAugmented.data();
+            this->mQMin = mArrayQMin.data();
+            this->mMinRatio = mArrayMinRatio.data();
+            this->mRatio = mArrayRatio.data();
+            this->mPoly = mArrayPoly.data();
+        }
+
+        // Use this constructor when you need a specific representation of
+        // zero and of one to be used when manipulating the polynomials of the
+        // base class. In particular, this is needed to select the correct
+        // zero and correct one for QFNumber objects.
+        LCPSolver(Real const& zero, Real const& one)
+            :
+            LCPSolverShared<Real>(n, zero, one)
         {
             this->mVarBasic = mArrayVarBasic.data();
             this->mVarNonbasic = mArrayVarNonbasic.data();

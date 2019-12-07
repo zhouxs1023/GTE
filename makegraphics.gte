@@ -13,7 +13,7 @@ endif
 
 ifeq (Dynamic,$(findstring Dynamic,$(CFG)))
 SOVER = 4
-RELVER = $(SOVER).1
+RELVER = $(SOVER).2
 CFLAGS += -fPIC
 AR := $(CC)
 ARFLAGS := $(LDFLAGS) -shared -fPIC -Wl,-soname,libgtgraphics.so.$(SOVER) -o
@@ -56,7 +56,7 @@ compile : $(OBJ)
 	$(AR) $(ARFLAGS) $(LIB) $(OBJDIR)/*.o
 
 setlinks :
-	# The shared libraries are created with extension .so.$(RELVER).$(SOVER), so
+	# The shared libraries are created with extension .so.$(RELVER), so
 	# we need soft links for the applications to find them at run time.
 	cd $(LIBDIR) && \
 	(FILES=`find . -name "*.so.$(RELVER)"`;\

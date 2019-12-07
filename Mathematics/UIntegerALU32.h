@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.09.03
 
 #pragma once
 
@@ -156,7 +156,7 @@ namespace gte
             auto numElements = std::minmax(numElements0, numElements1);
 
             // Add the u1-blocks to u0-blocks.
-            auto & bits = self.GetBits();
+            auto& bits = self.GetBits();
             uint64_t carry = 0, sum;
             int32_t i;
             for (i = 0; i < numElements.first; ++i)
@@ -219,7 +219,8 @@ namespace gte
 
             // Create the two's-complement number n2.  We know
             // n2.GetNumElements() is the same as numElements0.
-            UInteger n2(n0NumBits);
+            UInteger n2;
+            n2.SetNumBits(n0NumBits);
             auto& n2Bits = n2.GetBits();
             int32_t i;
             for (i = 0; i < numElements1; ++i)
@@ -264,7 +265,14 @@ namespace gte
                 }
             }
 
-            self.SetNumBits(32 * block + BitHacks::GetLeadingBit(bits[block]) + 1);
+            if (block >= 0)
+            {
+                self.SetNumBits(32 * block + BitHacks::GetLeadingBit(bits[block]) + 1);
+            }
+            else
+            {
+                self.SetNumBits(0);
+            }
         }
 
         void Mul(UInteger const& n0, UInteger const& n1)
@@ -281,7 +289,8 @@ namespace gte
             auto& bits = self.GetBits();
 
             // Product of a single-block number with a multiple-block number.
-            UInteger product(numBits);
+            UInteger product;
+            product.SetNumBits(numBits);
             auto& pBits = product.GetBits();
 
             // Get the array sizes.
@@ -362,7 +371,7 @@ namespace gte
             self.SetNumBits(nNumBits + shift);
 
             // Set the low-order bits to zero.
-            auto & bits = self.GetBits();
+            auto& bits = self.GetBits();
             int32_t const shiftBlock = shift / 32;
             for (int32_t i = 0; i < shiftBlock; ++i)
             {
@@ -434,7 +443,7 @@ namespace gte
 
             // The right-shifted result.
             self.SetNumBits(firstBitIndex - lastBitIndex + 1);
-            auto & bits = self.GetBits();
+            auto& bits = self.GetBits();
             int32_t const numBlocks = self.GetSize();
 
             // Get the location of the low-order 1-bit within the result.
@@ -465,6 +474,19 @@ namespace gte
             }
 
             return rshift + 32 * shiftBlock;
+        }
+
+        // Add 1 to 'this', useful for rounding modes in conversions of
+        // BSNumber and BSRational. The operation is performed in-place;
+        // that is, the result is stored in 'this' object. The return value
+        // is the amount shifted after the addition in order to obtain an
+        // odd integer.
+        int32_t RoundUp()
+        {
+            UInteger const& self = *(UInteger const*)this;
+            UInteger rounded;
+            rounded.Add(self, UInteger(1u));
+            return ShiftRightToOdd(rounded);
         }
 
         // Get a block of numRequested bits starting with the leading 1-bit of

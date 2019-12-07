@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2019.10.17
 
 #pragma once
 
@@ -66,11 +66,11 @@ namespace gte
         //
         // Choice of N for UIntegerFP32<N>.
         //    input type | compute type | N
-        //    -----------+--------------+-----
-        //    float      | BSNumber     |   18
-        //    double     | BSNumber     |  132
-        //    float      | BSRational   |  214
-        //    double     | BSRational   | 1587
+        //    -----------+--------------+----
+        //    float      | BSNumber     |  18
+        //    double     | BSNumber     | 132
+        //    float      | BSRational   |  35
+        //    double     | BSRational   | 263
         int ToLine(int i, int v0, int v1) const
         {
             return ToLine(mVertices[i], v0, v1);
@@ -107,11 +107,11 @@ namespace gte
         //
         // Choice of N for UIntegerFP32<N>.
         //    input type | compute type | N
-        //    -----------+--------------+-----
-        //    float      | BSNumber     |   18
-        //    double     | BSNumber     |  132
-        //    float      | BSRational   |  214
-        //    double     | BSRational   | 1587
+        //    -----------+--------------+----
+        //    float      | BSNumber     |  18
+        //    double     | BSNumber     | 132
+        //    float      | BSRational   |  35
+        //    double     | BSRational   | 263
         // This is the same as the first-listed ToLine calls because the
         // worst-case path has the same computational complexity.
         int ToLine(int i, int v0, int v1, int& order) const
@@ -189,8 +189,8 @@ namespace gte
         //    -----------+--------------+-----
         //    float      | BSNumber     |   18
         //    double     | BSNumber     |  132
-        //    float      | BSRational   |  214
-        //    double     | BSRational   | 1587
+        //    float      | BSRational   |   35
+        //    double     | BSRational   |  263
         // The query involves three calls to ToLine, so the numbers match
         // those of ToLine.
         int ToTriangle(int i, int v0, int v1, int v2) const
@@ -229,11 +229,11 @@ namespace gte
         //
         // Choice of N for UIntegerFP32<N>.
         //    input type | compute type | N
-        //    -----------+--------------+------
-        //    float      | BSNumber     |    35
-        //    double     | BSNumber     |   263
-        //    float      | BSRational   | 12302
-        //    double     | BSRational   | 92827
+        //    -----------+--------------+----
+        //    float      | BSNumber     |  35
+        //    double     | BSNumber     | 263
+        //    float      | BSRational   | 105
+        //    double     | BSRational   | 788
         // The query involves three calls of ToLine, so the numbers match
         // those of ToLine.
         int ToCircumcircle(int i, int v0, int v1, int v2) const
@@ -313,11 +313,11 @@ namespace gte
 
         // Choice of N for UIntegerFP32<N>.
         //    input type | compute type | N
-        //    -----------+--------------+-----
-        //    float      | BSNumber     |   18
-        //    double     | BSNumber     |  132
-        //    float      | BSRational   |  214
-        //    double     | BSRational   | 1587
+        //    -----------+--------------+----
+        //    float      | BSNumber     |  18
+        //    double     | BSNumber     | 132
+        //    float      | BSRational   |  35
+        //    double     | BSRational   | 263
         // This is the same as the first-listed ToLine calls because the
         // worst-case path has the same computational complexity.
         OrderType ToLineExtended(Vector2<Real> const& P, Vector2<Real> const& Q0, Vector2<Real> const& Q1) const
