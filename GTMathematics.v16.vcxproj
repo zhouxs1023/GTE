@@ -38,6 +38,7 @@
     <ClInclude Include="Mathematics\ApprOrthogonalLine3.h" />
     <ClInclude Include="Mathematics\ApprOrthogonalPlane3.h" />
     <ClInclude Include="Mathematics\ApprParaboloid3.h" />
+    <ClInclude Include="Mathematics\ApprParallelLines2.h" />
     <ClInclude Include="Mathematics\ApprPolynomial2.h" />
     <ClInclude Include="Mathematics\ApprPolynomial3.h" />
     <ClInclude Include="Mathematics\ApprPolynomial4.h" />

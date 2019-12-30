@@ -1401,5 +1401,8 @@
     <ClInclude Include="Mathematics\FPInterval.h">
       <Filter>Arithmetic</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\ApprParallelLines2.h">
+      <Filter>Approximation</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
