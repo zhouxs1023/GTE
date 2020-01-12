@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.08
 
 #pragma once
 
@@ -30,7 +30,7 @@ namespace gte
 
         CullingPlane()
             :
-            mTuple({ (Real)0, (Real)0, (Real)0, (Real)0 })
+            mTuple{ (Real)0, (Real)0, (Real)0, (Real)0 }
         {
         }
 
@@ -42,19 +42,19 @@ namespace gte
 
         CullingPlane(Vector4<Real> const& N, Real c)
             :
-            mTuple({ N[0], N[1], N[2], c })
+            mTuple{ N[0], N[1], N[2], c }
         {
         }
 
         CullingPlane(Real n0, Real n1, Real n2, Real c)
             :
-            mTuple({ n0, n1, n2, c })
+            mTuple{ n0, n1, n2, c }
         {
         }
 
         CullingPlane(Vector4<Real> const& N, Vector4<Real> const& P)
             :
-            mTuple({ N[0], N[1], N[2], -Dot(N, P) })
+            mTuple{ N[0], N[1], N[2], -Dot(N, P) }
         {
         }
 

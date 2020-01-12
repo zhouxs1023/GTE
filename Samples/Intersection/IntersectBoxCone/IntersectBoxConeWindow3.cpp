@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #include "IntersectBoxConeWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -174,7 +174,7 @@ void IntersectBoxConeWindow3::CreateScene()
     }
 
     auto effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.5f, 0.0f, 0.5f }));
+        Vector4<float>{ 0.0f, 0.5f, 0.0f, 0.5f });
     mConeH0Mesh->SetEffect(effect);
     mPVWMatrices.Subscribe(mConeH0Mesh->worldTransform, effect->GetPVWMatrixConstant());
 
@@ -200,7 +200,7 @@ void IntersectBoxConeWindow3::CreateScene()
     }
 
     effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.5f, 0.0f, 0.5f }));
+        Vector4<float>{ 0.0f, 0.5f, 0.0f, 0.5f });
     mConeH4Mesh->SetEffect(effect);
     mPVWMatrices.Subscribe(mConeH4Mesh->worldTransform, effect->GetPVWMatrixConstant());
 
@@ -210,15 +210,15 @@ void IntersectBoxConeWindow3::CreateScene()
     mDiskMaxMesh->localTransform.SetTranslation(mCone.ray.origin + mCone.GetMaxHeight() * mCone.ray.direction);
     mDiskMaxMesh->Update();
     effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.5f, 0.0f, 0.5f }));
+        Vector4<float>{ 0.0f, 0.5f, 0.0f, 0.5f });
     mDiskMaxMesh->SetEffect(effect);
     mPVWMatrices.Subscribe(mDiskMaxMesh->worldTransform, effect->GetPVWMatrixConstant());
 
     mRedEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.5f, 0.0f, 0.0f, 0.5f }));
+        Vector4<float>{ 0.5f, 0.0f, 0.0f, 0.5f });
 
     mBlueEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.0f, 0.5f, 0.5f }));
+        Vector4<float>{ 0.0f, 0.0f, 0.5f, 0.5f });
 
     Vector3<float> extent{ 1.0f, 2.0f, 3.0f };
 #if defined(USE_ORIENTED_BOX)

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.08
 
 #pragma once
 
@@ -34,26 +34,26 @@ namespace gte
         {
         }
 
-        IEEEBinary16(float number)
+        IEEEBinary16(float inNumber)
             :
             IEEEBinary<int16_t, uint16_t, 16, 11>()
         {
-            union { float n; uint32_t e; } temp = { number };
+            union { float n; uint32_t e; } temp = { inNumber };
             encoding = Convert32To16(temp.e);
         }
 
-        IEEEBinary16(double number)
+        IEEEBinary16(double inNumber)
             :
             IEEEBinary<int16_t, uint16_t, 16, 11>()
         {
             union { float n; uint32_t e; } temp;
-            temp.n = (float)number;
+            temp.n = (float)inNumber;
             encoding = Convert32To16(temp.e);
         }
 
-        IEEEBinary16(uint16_t encoding)
+        IEEEBinary16(uint16_t inEncoding)
             :
-            IEEEBinary<int16_t, uint16_t, 16, 11>(encoding)
+            IEEEBinary<int16_t, uint16_t, 16, 11>(inEncoding)
         {
         }
 
@@ -133,14 +133,14 @@ namespace gte
             FRC_HALF = 0x00001000
         };
 
-        static uint16_t Convert32To16(uint32_t encoding)
+        static uint16_t Convert32To16(uint32_t inEncoding)
         {
             // Extract the channels for the binary32 number.
-            uint32_t sign32 = (encoding & F32_SIGN_MASK);
+            uint32_t sign32 = (inEncoding & F32_SIGN_MASK);
             uint32_t biased32 =
-                ((encoding & F32_BIASED_EXPONENT_MASK) >> F32_NUM_TRAILING_BITS);
-            uint32_t trailing32 = (encoding & F32_TRAILING_MASK);
-            uint32_t nonneg32 = (encoding & F32_NOT_SIGN_MASK);
+                ((inEncoding & F32_BIASED_EXPONENT_MASK) >> F32_NUM_TRAILING_BITS);
+            uint32_t trailing32 = (inEncoding & F32_TRAILING_MASK);
+            uint32_t nonneg32 = (inEncoding & F32_NOT_SIGN_MASK);
 
             // Generate the channels for the IEEEBinary16 number.
             uint16_t sign16 = static_cast<uint16_t>(sign32 >> DIFF_NUM_ENCODING_BITS);
@@ -231,12 +231,12 @@ namespace gte
             return sign16 | IEEEBinary16::EXPONENT_MASK | maskPayload;
         }
 
-        static uint32_t Convert16To32(uint16_t encoding)
+        static uint32_t Convert16To32(uint16_t inEncoding)
         {
             // Extract the channels for the IEEEBinary16 number.
-            uint16_t sign16 = (encoding & IEEEBinary16::SIGN_MASK);
-            uint16_t biased16 = ((encoding & IEEEBinary16::EXPONENT_MASK) >> IEEEBinary16::NUM_TRAILING_BITS);
-            uint16_t trailing16 = (encoding & IEEEBinary16::TRAILING_MASK);
+            uint16_t sign16 = (inEncoding & IEEEBinary16::SIGN_MASK);
+            uint16_t biased16 = ((inEncoding & IEEEBinary16::EXPONENT_MASK) >> IEEEBinary16::NUM_TRAILING_BITS);
+            uint16_t trailing16 = (inEncoding & IEEEBinary16::TRAILING_MASK);
 
             // Generate the channels for the binary32 number.
             uint32_t sign32 = static_cast<uint32_t>(sign16 << DIFF_NUM_ENCODING_BITS);

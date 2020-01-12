@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.09.03
+// Version: 4.0.2020.01.08
 
 #pragma once
 
@@ -631,17 +631,17 @@ namespace gte
     struct is_arbitrary_precision_internal : std::false_type {};
 
     template <typename T>
-    struct is_arbitrary_precision : is_arbitrary_precision_internal<std::remove_cv_t<T>>::type {};
+    struct is_arbitrary_precision : is_arbitrary_precision_internal<T>::type {};
 
     // The trait has_division_operator<T> for type T of float, double or
     // long double generates has_division_operator<T>::value of true.  The
     // implementations for arbitrary-precision arithmetic are found in
-    // GteArbitraryPrecision.h.
+    // ArbitraryPrecision.h.
     template <typename T>
     struct has_division_operator_internal : std::false_type {};
 
     template <typename T>
-    struct has_division_operator : has_division_operator_internal<std::remove_cv_t<T>>::type {};
+    struct has_division_operator : has_division_operator_internal<T>::type {};
 
     template <>
     struct has_division_operator_internal<float> : std::true_type {};

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #include "HelixTubeSurfaceWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -212,7 +212,7 @@ void HelixTubeSurfaceWindow3::MoveCamera(float time)
     mMedial->Evaluate(time, 1, values);
     Vector4<float> position = HLift(values[0], 1.0f);
     Vector4<float> tangent = HLift(values[1], 0.0f);
-    Vector4<float> binormal = UnitCross(tangent, Vector4<float>({ 0.0f, 0.0f, 1.0f, 0.0f }));
+    Vector4<float> binormal = UnitCross(tangent, Vector4<float>{ 0.0f, 0.0f, 1.0f, 0.0f });
     Vector4<float> normal = UnitCross(binormal, tangent);
     binormal -= Dot(binormal, normal) * normal;
     Normalize(binormal);

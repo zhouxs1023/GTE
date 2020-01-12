@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #include "DistanceAlignedBoxesWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -128,15 +128,15 @@ void DistanceAlignedBoxesWindow3::CreateScene()
     mBox1Mesh->localTransform.SetTranslation(center1);
 
     auto effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.5f, 0.0f, 0.5f }));
+        Vector4<float>{ 0.0f, 0.5f, 0.0f, 0.5f });
     mBox0Mesh->SetEffect(effect);
     mPVWMatrices.Subscribe(mBox0Mesh->worldTransform, effect->GetPVWMatrixConstant());
 
     mRedEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.5f, 0.0f, 0.0f, 0.5f }));
+        Vector4<float>{ 0.5f, 0.0f, 0.0f, 0.5f });
 
     mBlueEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.0f, 0.5f, 0.5f }));
+        Vector4<float>{ 0.0f, 0.0f, 0.5f, 0.5f });
 
     mBox1Mesh->SetEffect(mBlueEffect);
     mPVWMatrices.Subscribe(mBox1Mesh->worldTransform, mBlueEffect->GetPVWMatrixConstant());
@@ -145,19 +145,19 @@ void DistanceAlignedBoxesWindow3::CreateScene()
     vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
     auto ibuffer = std::make_shared<IndexBuffer>(IP_POLYSEGMENT_DISJOINT, 1);
     effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.0f, 0.0f, 1.0f }));
+        Vector4<float>{ 0.0f, 0.0f, 0.0f, 1.0f });
     mSegment = std::make_shared<Visual>(vbuffer, ibuffer, effect);
     mPVWMatrices.Subscribe(mSegment->worldTransform, effect->GetPVWMatrixConstant());
 
     mPoint0 = mf.CreateSphere(8, 8, 0.0625f);
     effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.0f, 0.0f, 1.0f }));
+        Vector4<float>{ 0.0f, 0.0f, 0.0f, 1.0f });
     mPoint0->SetEffect(effect);
     mPVWMatrices.Subscribe(mPoint0->worldTransform, effect->GetPVWMatrixConstant());
 
     mPoint1 = mf.CreateSphere(8, 8, 0.0625f);
     effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.0f, 0.0f, 1.0f }));
+        Vector4<float>{ 0.0f, 0.0f, 0.0f, 1.0f });
     mPoint1->SetEffect(effect);
     mPVWMatrices.Subscribe(mPoint1->worldTransform, effect->GetPVWMatrixConstant());
 

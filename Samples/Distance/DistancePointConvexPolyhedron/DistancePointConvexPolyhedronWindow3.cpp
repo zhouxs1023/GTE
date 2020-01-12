@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #include "DistancePointConvexPolyhedronWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -135,15 +135,15 @@ void DistancePointConvexPolyhedronWindow3::CreateScene()
     mPointMesh = mf.CreateSphere(8, 8, 0.0625f);
     mPointMesh->localTransform.SetTranslation(mPoint);
     auto effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.5f, 0.0f, 0.5f }));
+        Vector4<float>{ 0.0f, 0.5f, 0.0f, 0.5f });
     mPointMesh->SetEffect(effect);
     mPVWMatrices.Subscribe(mPointMesh->worldTransform, effect->GetPVWMatrixConstant());
 
     mRedEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.5f, 0.0f, 0.0f, 0.5f }));
+        Vector4<float>{ 0.5f, 0.0f, 0.0f, 0.5f });
 
     mBlueEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.0f, 0.5f, 0.5f }));
+        Vector4<float>{ 0.0f, 0.0f, 0.5f, 0.5f });
 
     mPolyhedronMesh = mf.CreateIcosahedron();
     mPolyhedronMesh->SetEffect(mBlueEffect);
@@ -166,7 +166,7 @@ void DistancePointConvexPolyhedronWindow3::CreateScene()
     vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
     ibuffer = std::make_shared<IndexBuffer>(IP_POLYSEGMENT_DISJOINT, 1);
     effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.0f, 0.0f, 1.0f }));
+        Vector4<float>{ 0.0f, 0.0f, 0.0f, 1.0f });
     mSegment = std::make_shared<Visual>(vbuffer, ibuffer, effect);
     mPVWMatrices.Subscribe(mSegment->worldTransform, effect->GetPVWMatrixConstant());
 

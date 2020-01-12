@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.11
 
 #pragma once
 
@@ -41,7 +41,7 @@ namespace gte
         bool CopyCpuToGpu(unsigned int level);
         bool CopyGpuToCpu(unsigned int level);
 
-        void CopyGpuToGpu(GL45TextureSingle* texture, unsigned int level)
+        void CopyLevelGpuToGpu(GL45TextureSingle* texture, unsigned int level)
         {
             (void)texture;
             (void)level;

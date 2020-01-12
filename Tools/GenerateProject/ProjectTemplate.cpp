@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #include "ProjectTemplate.h"
 #include <cctype>
@@ -336,7 +336,7 @@ std::string const Template::msConsoleMainCPP =
 R"raw(#include "_PROJECT_NAME_Console.h"
 #include <Applications/LogReporter.h>
 
-int main(int, char const*[])
+int main()
 {
 #if defined(_DEBUG)
     LogReporter reporter(
@@ -393,7 +393,7 @@ std::string const Template::msWindow2MainCPP =
 R"raw(#include "_PROJECT_NAME_Window2.h"
 #include <Applications/LogReporter.h>
 
-int main(int, char const*[])
+int main()
 {
 #if defined(_DEBUG)
     LogReporter reporter(
@@ -451,7 +451,7 @@ std::string const Template::msWindow3MainCPP =
 R"raw(#include "_PROJECT_NAME_Window3.h"
 #include <Applications/LogReporter.h>
 
-int main(int, char const*[])
+int main()
 {
 #if defined(_DEBUG)
     LogReporter reporter(

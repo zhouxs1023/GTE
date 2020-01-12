@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/Command.h>
@@ -17,6 +17,31 @@ std::string const Command::msFilenameNotFound("Filename not found.");
 std::string const Command::msDash("-");
 
 Command::Command (int numArguments, char const* arguments[])
+    :
+    mSmall(0.0),
+    mLarge(0.0),
+    mMinSet(false),
+    mMaxSet(false),
+    mInfSet(false),
+    mSupSet(false),
+    mLastError("")
+{
+    // The first argument is always the executable name.
+    LogAssert(numArguments > 0, "Invalid number of arguments.");
+
+    mArguments.resize(numArguments);
+    mProcessed.resize(numArguments);
+    for (int i = 0; i < numArguments; ++i)
+    {
+        mArguments[i] = std::string(arguments[i]);
+        mProcessed[i] = false;
+    }
+
+    // The executable name, which is considered to have been processed.
+    mProcessed[0] = true;
+}
+
+Command::Command(int numArguments, char* arguments[])
     :
     mSmall(0.0),
     mLarge(0.0),

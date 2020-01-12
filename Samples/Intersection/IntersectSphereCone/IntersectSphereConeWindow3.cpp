@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #include "IntersectSphereConeWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -135,21 +135,21 @@ bool IntersectSphereConeWindow3::OnCharPress(unsigned char key, int x, int y)
 void IntersectSphereConeWindow3::CreateScene()
 {
     mBlueEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.0f, 1.0f, mAlpha }));
+        Vector4<float>{ 0.0f, 0.0f, 1.0f, mAlpha });
 
     mCyanEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 1.0f, 1.0f, mAlpha }));
+        Vector4<float>{ 0.0f, 1.0f, 1.0f, mAlpha });
 
     mRedEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 1.0f, 0.0f, 0.0f, mAlpha }));
+        Vector4<float>{ 1.0f, 0.0f, 0.0f, mAlpha });
 
     for (int i = 0; i < 2; ++i)
     {
         mGreenEffect[i] = std::make_shared<ConstantColorEffect>(mProgramFactory,
-            Vector4<float>({ 0.0f, 1.0f, 0.0f, mAlpha }));
+            Vector4<float>{ 0.0f, 1.0f, 0.0f, mAlpha });
 
         mYellowEffect[i] = std::make_shared<ConstantColorEffect>(mProgramFactory,
-            Vector4<float>({ 1.0f, 1.0f, 0.0f, mAlpha }));
+            Vector4<float>{ 1.0f, 1.0f, 0.0f, mAlpha });
     }
 
     // Create a visual representation of the cone with heights in [4,16].

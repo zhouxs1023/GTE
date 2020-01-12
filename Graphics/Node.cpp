@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Node.h>
@@ -155,7 +155,7 @@ void Node::UpdateWorldBound()
     if (!worldBoundIsCurrent)
     {
         // Start with an invalid bound.
-        worldBound.SetCenter({ 0.0f, 0.0f, 0.0f, 1.0f });
+        worldBound.SetCenter({ 0.0f, 0.0f, 0.0f });
         worldBound.SetRadius(0.0f);
 
         for (auto& child : mChild)

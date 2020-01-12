@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.11
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/IndexBuffer.h>
@@ -48,7 +48,7 @@ uint32_t IndexBuffer::GetNumActiveIndices() const
 
 void IndexBuffer::SetFirstPrimitive(uint32_t first)
 {
-    if (0 <= first && first < mNumPrimitives && first + mNumActivePrimitives <= mNumPrimitives)
+    if (first < mNumPrimitives && first + mNumActivePrimitives <= mNumPrimitives)
     {
         mFirstPrimitive = first;
         return;

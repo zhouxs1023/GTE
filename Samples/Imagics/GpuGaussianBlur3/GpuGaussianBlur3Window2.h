@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.11
 
 #pragma once
 
@@ -15,10 +15,10 @@ class GpuGaussianBlur3Window2 : public Window2
 public:
     struct Parameters : public Window2::Parameters
     {
-        Parameters(std::wstring const& title, int xOrigin, int yOrigin,
-            int xSize, int ySize, bool inUseDirichlet)
+        Parameters(std::wstring const& inTitle, int inXOrigin, int inYOrigin,
+            int inXSize, int inYSize, bool inUseDirichlet)
             :
-            Window2::Parameters(title, xOrigin, yOrigin, xSize, ySize),
+            Window2::Parameters(inTitle, inXOrigin, inYOrigin, inXSize, inYSize),
             useDirichlet(inUseDirichlet)
         {
         }

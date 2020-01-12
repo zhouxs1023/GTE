@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #pragma once
 
@@ -64,8 +64,8 @@ namespace gte
         // the compiler.
         Transform()
             :
-            mTranslate({ (Real)0, (Real)0, (Real)0, (Real)1 }),
-            mScale({ (Real)1, (Real)1, (Real)1, (Real)1 }),
+            mTranslate{ (Real)0, (Real)0, (Real)0, (Real)1 },
+            mScale{ (Real)1, (Real)1, (Real)1, (Real)1 },
             mIsIdentity(true),
             mIsRSMatrix(true),
             mIsUniformScale(true),
@@ -158,7 +158,7 @@ namespace gte
 
         void SetTranslation(Real x0, Real x1, Real x2)
         {
-            mTranslate = { x0, x1, x2, (Real)1 };
+            mTranslate = Vector4<Real>{ x0, x1, x2, (Real)1 };
             mIsIdentity = false;
             UpdateHMatrix();
         }

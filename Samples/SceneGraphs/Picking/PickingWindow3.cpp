@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #include "PickingWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -127,7 +127,7 @@ void PickingWindow3::CreateScene()
     vertices[3] = { 2.0f, 1.0f, 7.0f };
     auto ibuffer = std::make_shared<IndexBuffer>(IP_POLYPOINT, 4);
     auto cceffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.5f, 0.0f, 0.0f, 1.0f }));
+        Vector4<float>{ 0.5f, 0.0f, 0.0f, 1.0f });
     mPoints = std::make_shared<Visual>(vbuffer, ibuffer, cceffect);
     mPoints->UpdateModelBound();
     mPVWMatrices.Subscribe(mPoints->worldTransform, cceffect->GetPVWMatrixConstant());
@@ -144,7 +144,7 @@ void PickingWindow3::CreateScene()
     ibuffer->SetSegment(1, 1, 2);
     ibuffer->SetSegment(2, 2, 3);
     cceffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.0f, 0.5f, 1.0f }));
+        Vector4<float>{ 0.0f, 0.0f, 0.5f, 1.0f });
     mSegments = std::make_shared<Visual>(vbuffer, ibuffer, cceffect);
     mSegments->UpdateModelBound();
     mPVWMatrices.Subscribe(mSegments->worldTransform, cceffect->GetPVWMatrixConstant());
@@ -154,7 +154,7 @@ void PickingWindow3::CreateScene()
     {
         mSphere[i] = mf.CreateSphere(8, 8, 0.125f);
         cceffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-            Vector4<float>({ 0.0f, 0.0f, 0.0f, 1.0f }));
+            Vector4<float>{ 0.0f, 0.0f, 0.0f, 1.0f });
         mSphere[i]->SetEffect(cceffect);
         mPVWMatrices.Subscribe(mSphere[i]->worldTransform, cceffect->GetPVWMatrixConstant());
         mScene->AttachChild(mSphere[i]);

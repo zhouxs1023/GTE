@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.11
 
 #include <Graphics/GL45/GL45.h>
 #include <cassert>
@@ -37,14 +37,14 @@
 // Support for querying the OpenGL function pointers.  Each platform must
 // provide its own GetOpenGLFunctionPointer.
 template <typename PGLFunction>
-static void GetOpenGLFunction(char const* name, PGLFunction & function)
+static void GetOpenGLFunction(char const* name, PGLFunction& function)
 {
     extern void* GetOpenGLFunctionPointer(char const*);
     function = (PGLFunction)GetOpenGLFunctionPointer(name);
 }
 
 // Listen for glError warnings or errors.
-#define GTE_GL43_THROW_ON_REPORT_LISTENER_WARNING
+#define GTE_GL45_THROW_ON_REPORT_LISTENER_WARNING
 void OpenGLReportListener(char const* glFunction, GLenum code)
 {
     if (!glFunction)
@@ -83,13 +83,12 @@ void OpenGLReportListener(char const* glFunction, GLenum code)
             strCode = "GL_CONTEXT_LOST";
             return;
         default:
-#if defined(GTE_GL43_THROW_ON_REPORT_LISTENER_WARNING)
+#if defined(GTE_GL45_THROW_ON_REPORT_LISTENER_WARNING)
             throw std::runtime_error("GL error <" + strCode + "> in " + strFunction);
 #endif
         }
     }
 }
-
 static int GetOpenGLVersion()
 {
     GLint major = 0, minor = 0;

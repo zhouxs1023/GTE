@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.11
 
 #pragma once
 
@@ -64,8 +64,7 @@ namespace gte
 
                 // Compute potential separating plane
                 // (assert: normal != (0,0,0)).
-                separatingPlane = Plane3<Real>({ points0[i0], points0[i1],
-                    points0[i2] });
+                separatingPlane = Plane3<Real>({ points0[i0], points0[i1], points0[i2] });
 
                 // Determine whether hull 1 is on same side of plane.
                 side1 = OnSameSide(separatingPlane, numTriangles1, indices1, points1);
@@ -73,8 +72,7 @@ namespace gte
                 if (side1)
                 {
                     // Determine on which side of plane hull 0 lies.
-                    side0 = WhichSide(separatingPlane, numTriangles0, indices0,
-                        points0);
+                    side0 = WhichSide(separatingPlane, numTriangles0, indices0, points0);
                     if (side0 * side1 <= 0)  // Plane separates hulls.
                     {
                         return true;
@@ -92,8 +90,7 @@ namespace gte
 
                 // Compute perpendicular to face
                 // (assert: normal != (0,0,0)).
-                separatingPlane = Plane3<Real>({ points1[i0], points1[i1],
-                    points1[i2] });
+                separatingPlane = Plane3<Real>({ points1[i0], points1[i1], points1[i2] });
 
                 // Determine whether hull 0 is on same side of plane.
                 side0 = OnSameSide(separatingPlane, numTriangles0, indices0, points0);

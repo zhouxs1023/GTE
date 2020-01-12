@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #include "IntersectBoxSphereWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -141,15 +141,15 @@ void IntersectBoxSphereWindow3::CreateScene()
     mSphereMesh = mf.CreateSphere(16, 16, mSphere.radius);
     mSphereMesh->localTransform.SetTranslation(mSphere.center);
     auto effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.5f, 0.0f, 0.5f }));
+        Vector4<float>{ 0.0f, 0.5f, 0.0f, 0.5f });
     mSphereMesh->SetEffect(effect);
     mPVWMatrices.Subscribe(mSphereMesh->worldTransform, effect->GetPVWMatrixConstant());
 
     mRedEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.5f, 0.0f, 0.0f, 0.5f }));
+        Vector4<float>{ 0.5f, 0.0f, 0.0f, 0.5f });
 
     mBlueEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
-        Vector4<float>({ 0.0f, 0.0f, 0.5f, 0.5f }));
+        Vector4<float>{ 0.0f, 0.0f, 0.5f, 0.5f });
 
     mBox.center = { 0.0f, 0.0f, 0.0f };
     mBox.axis[0] = { 1.0f, 0.0f, 0.0f };

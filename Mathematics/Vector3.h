@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #pragma once
 
@@ -137,7 +137,7 @@ namespace gte
             epsilon(inEpsilon),
             dimension(0),
             maxRange((Real)0),
-            origin({ (Real)0, (Real)0, (Real)0 }),
+            origin{ (Real)0, (Real)0, (Real)0 },
             extremeCCW(false)
         {
             min[0] = (Real)0;

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/SamplerState.h>
@@ -15,7 +15,7 @@ SamplerState::SamplerState()
     mipLODBias(0.0f),
     maxAnisotropy(1),
     comparison(NEVER),
-    borderColor({ 1.0f, 1.0f, 1.0f, 1.0f }),
+    borderColor{ 1.0f, 1.0f, 1.0f, 1.0f },
     minLOD(-std::numeric_limits<float>::max()),
     maxLOD(std::numeric_limits<float>::max())
 {

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.09.14
+// Version: 4.0.2020.01.10
 
 #pragma once
 
@@ -100,7 +100,7 @@ namespace gte
         // Create z = x0 + x1 * sqrt(d).
         QFNumber(T const& x0, T const& x1, T const& inD)
             :
-            x({ x0, x1 }),
+            x{ x0, x1 },
             d(inD)
         {
         }

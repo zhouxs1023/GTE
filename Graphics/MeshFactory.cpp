@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/MeshFactory.h>
@@ -423,7 +423,7 @@ std::shared_ptr<Visual> MeshFactory::CreateCylinderOpen(unsigned int numAxisSamp
         // generated bounding volume to be slightly off center.  Reset the
         // bound to use the true information.
         float maxDist = std::sqrt(radius * radius + height * height);
-        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f, 1.0f });
+        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f });
         visual->modelBound.SetRadius(maxDist);
     }
 
@@ -488,7 +488,7 @@ std::shared_ptr<Visual> MeshFactory::CreateCylinderClosed(unsigned int numAxisSa
     // generated bounding volume to be slightly off center.  Reset the bound
     // to use the true information.
     float maxDist = std::sqrt(radius * radius + height * height);
-    visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f, 1.0f });
+    visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f });
     visual->modelBound.SetRadius(maxDist);
     return visual;
 }
@@ -655,7 +655,7 @@ std::shared_ptr<Visual> MeshFactory::CreateSphere(unsigned int numZSamples,
         // The duplication of vertices at the seam cause the automatically
         // generated bounding volume to be slightly off center.  Reset the
         // bound to use the true information.
-        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f, 1.0f });
+        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f });
         visual->modelBound.SetRadius(radius);
     }
     return visual;
@@ -780,7 +780,7 @@ std::shared_ptr<Visual> MeshFactory::CreateTorus(
         // The duplication of vertices at the seam cause the automatically
         // generated bounding volume to be slightly off center.  Reset the
         // bound to use the true information.
-        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f, 1.0f });
+        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f });
         visual->modelBound.SetRadius(outerRadius);
     }
     return visual;
@@ -841,7 +841,7 @@ std::shared_ptr<Visual> MeshFactory::CreateTetrahedron()
     if (visual)
     {
         // The bound is the unit sphere.
-        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f, 1.0f });
+        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f });
         visual->modelBound.SetRadius(1.0f);
     }
     return visual;
@@ -912,7 +912,7 @@ std::shared_ptr<Visual> MeshFactory::CreateHexahedron()
     if (visual)
     {
         // The bound is the unit sphere.
-        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f, 1.0f });
+        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f });
         visual->modelBound.SetRadius(1.0f);
     }
     return visual;
@@ -976,7 +976,7 @@ std::shared_ptr<Visual> MeshFactory::CreateOctahedron()
     if (visual)
     {
         // The bound is the unit sphere.
-        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f, 1.0f });
+        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f });
         visual->modelBound.SetRadius(1.0f);
     }
     return visual;
@@ -1085,7 +1085,7 @@ std::shared_ptr<Visual> MeshFactory::CreateDodecahedron()
     if (visual)
     {
         // The bound is the unit sphere.
-        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f, 1.0f });
+        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f });
         visual->modelBound.SetRadius(1.0f);
     }
     return visual;
@@ -1171,7 +1171,7 @@ std::shared_ptr<Visual> MeshFactory::CreateIcosahedron()
     if (visual)
     {
         // The bound is the unit sphere.
-        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f, 1.0f });
+        visual->modelBound.SetCenter({ 0.0f, 0.0f, 0.0f });
         visual->modelBound.SetRadius(1.0f);
     }
     return visual;

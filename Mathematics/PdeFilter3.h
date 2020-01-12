@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.11
 
 #pragma once
 
@@ -840,7 +840,7 @@ namespace gte
                     {
                         if (!mHasMask || mMask[z][y][x])
                         {
-                            OnUpdate(x, y, z);
+                            OnUpdateSingle(x, y, z);
                         }
                     }
                 }
@@ -858,7 +858,7 @@ namespace gte
         // The per-pixel processing depends on the PDE algorithm.  The (x,y,z)
         // must be in padded coordinates: 1 <= x <= xbound, 1 <= y <= ybound
         // and 1 <= z <= zbound.
-        virtual void OnUpdate(int x, int y, int z) = 0;
+        virtual void OnUpdateSingle(int x, int y, int z) = 0;
 
         // Copy source data to temporary storage.
         void LookUp7(int x, int y, int z)

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #pragma once
 
@@ -461,14 +461,14 @@ namespace gte
                 {
                     for (int i = 1; i < numVerticesM1; ++i)
                     {
-                        mTriangles.push_back({ { indices[0], indices[i], indices[i + 1] } });
+                        mTriangles.push_back( { indices[0], indices[i], indices[i + 1] } );
                     }
                 }
                 else
                 {
                     for (int i = 1; i < numVerticesM1; ++i)
                     {
-                        mTriangles.push_back({ { 0, i, i + 1 } });
+                        mTriangles.push_back( { 0, i, i + 1 } );
                     }
                 }
                 return;
@@ -501,7 +501,7 @@ namespace gte
                 // triangles.
                 int iVPrev = V(mEFirst).vPrev;
                 int iVNext = V(mEFirst).vNext;
-                mTriangles.push_back({ { V(iVPrev).index, V(mEFirst).index, V(iVNext).index } });
+                mTriangles.push_back( { V(iVPrev).index, V(mEFirst).index, V(iVNext).index } );
 
                 // Remove the vertex corresponding to the ear.
                 RemoveV(mEFirst);
@@ -512,7 +512,7 @@ namespace gte
                     mEFirst = RemoveE(mEFirst);
                     iVPrev = V(mEFirst).vPrev;
                     iVNext = V(mEFirst).vNext;
-                    mTriangles.push_back({ { V(iVPrev).index, V(mEFirst).index, V(iVNext).index } });
+                    mTriangles.push_back( { V(iVPrev).index, V(mEFirst).index, V(iVNext).index } );
                     bRemoveAnEar = false;
                     continue;
                 }

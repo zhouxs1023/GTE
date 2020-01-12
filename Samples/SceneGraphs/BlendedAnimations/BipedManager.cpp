@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #include "BipedManager.h"
 #include <Applications/WICFileIO.h>
@@ -526,36 +526,36 @@ std::shared_ptr<TransformController> BipedManager::LoadTransformController(
 #if defined(GTE_USE_MAT_VEC)
     if (isRSMatrix)
     {
-        localTransform.SetRotation(Matrix4x4<float>({
+        localTransform.SetRotation(Matrix4x4<float>{
             mat[0], mat[1], mat[2], 0.0f,
             mat[3], mat[4], mat[5], 0.0f,
             mat[6], mat[7], mat[8], 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f }));
+            0.0f, 0.0f, 0.0f, 1.0f });
     }
     else
     {
-        localTransform.SetMatrix(Matrix4x4<float>({
+        localTransform.SetMatrix(Matrix4x4<float>{
             mat[0], mat[1], mat[2], 0.0f,
             mat[3], mat[4], mat[5], 0.0f,
             mat[6], mat[7], mat[8], 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f }));
+            0.0f, 0.0f, 0.0f, 1.0f });
     }
 #else
     if (isRSMatrix)
     {
-        localTransform.SetRotation(Matrix4x4<float>({
+        localTransform.SetRotation(Matrix4x4<float>{
             mat[0], mat[3], mat[6], 0.0f,
             mat[1], mat[4], mat[7], 0.0f,
             mat[2], mat[5], mat[8], 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f }));
+            0.0f, 0.0f, 0.0f, 1.0f });
     }
     else
     {
-        localTransform.SetMatrix(Matrix4x4<float>({
+        localTransform.SetMatrix(Matrix4x4<float>{
             mat[0], mat[3], mat[6], 0.0f,
             mat[1], mat[4], mat[7], 0.0f,
             mat[2], mat[5], mat[8], 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f }));
+            0.0f, 0.0f, 0.0f, 1.0f });
     }
 #endif
 

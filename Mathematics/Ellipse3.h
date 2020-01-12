@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2019
+// Copyright (c) 1998-2020
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.01.10
 
 #pragma once
 
@@ -30,7 +30,7 @@ namespace gte
             :
             center(Vector3<Real>::Zero()),
             normal(Vector3<Real>::Unit(2)),
-            extent({ (Real)1, (Real)1 })
+            extent{ (Real)1, (Real)1 }
         {
             axis[0] = Vector3<Real>::Unit(0);
             axis[1] = Vector3<Real>::Unit(1);
