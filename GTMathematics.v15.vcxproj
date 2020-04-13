@@ -104,6 +104,7 @@
     <ClInclude Include="Mathematics\ConvertCoordinates.h" />
     <ClInclude Include="Mathematics\ConvexHull2.h" />
     <ClInclude Include="Mathematics\ConvexHull3.h" />
+    <ClInclude Include="Mathematics\ConvexMesh3.h" />
     <ClInclude Include="Mathematics\ConvexPolyhedron3.h" />
     <ClInclude Include="Mathematics\CosEstimate.h" />
     <ClInclude Include="Mathematics\CubicRootsQR.h" />
@@ -241,6 +242,7 @@
     <ClInclude Include="Mathematics\IntrCapsule3Capsule3.h" />
     <ClInclude Include="Mathematics\IntrCircle2Arc2.h" />
     <ClInclude Include="Mathematics\IntrCircle2Circle2.h" />
+    <ClInclude Include="Mathematics\IntrConvexMesh3Plane3.h" />
     <ClInclude Include="Mathematics\IntrConvexPolygonHyperplane.h" />
     <ClInclude Include="Mathematics\IntrDisk2Sector2.h" />
     <ClInclude Include="Mathematics\IntrEllipse2Ellipse2.h" />
@@ -403,6 +405,8 @@
     <ClInclude Include="Mathematics\RiemannianGeodesic.h" />
     <ClInclude Include="Mathematics\RigidBody.h" />
     <ClInclude Include="Mathematics\RootsBisection.h" />
+    <ClInclude Include="Mathematics\RootsBisection1.h" />
+    <ClInclude Include="Mathematics\RootsBisection2.h" />
     <ClInclude Include="Mathematics\RootsBrentsMethod.h" />
     <ClInclude Include="Mathematics\RootsPolynomial.h" />
     <ClInclude Include="Mathematics\Rotation.h" />

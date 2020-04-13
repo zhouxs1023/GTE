@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.04.13
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DXGIOutput.h>
@@ -11,10 +11,7 @@ using namespace gte;
 
 DXGIOutput::~DXGIOutput()
 {
-    if (mOutput)
-    {
-        mOutput->Release();
-    }
+    DX11::SafeRelease(mOutput);
 }
 
 DXGIOutput::DXGIOutput(DXGIOutput const& object)
@@ -31,19 +28,15 @@ DXGIOutput::DXGIOutput(IDXGIOutput* output)
     ZeroMemory(&mDescription, sizeof(DXGI_OUTPUT_DESC));
     if (mOutput)
     {
+        DX11::SafeAddRef(mOutput);
         DX11Log(mOutput->GetDesc(&mDescription));
     }
 }
 
 DXGIOutput& DXGIOutput::operator=(DXGIOutput const& object)
 {
-    if (object.mOutput)
-    {
-        object.mOutput->AddRef();
-    }
-
+    DX11::SafeAddRef(object.mOutput);
     DX11::SafeRelease(mOutput);
-
     mOutput = object.mOutput;
     mDescription = object.mDescription;
     return *this;
@@ -93,4 +86,26 @@ HRESULT DXGIOutput::FindClosestMatchingMode(DXGI_MODE_DESC const& requested,
     }
 
     LogError("Output not yet set.");
+}
+
+void DXGIOutput::Enumerate(IDXGIAdapter* adapter, std::vector<DXGIOutput>& outputs)
+{
+    outputs.clear();
+
+    if (adapter)
+    {
+        for (UINT i = 0; /**/; ++i)
+        {
+            IDXGIOutput* output = nullptr;
+            HRESULT hr = adapter->EnumOutputs(i, &output);
+            if (hr != DXGI_ERROR_NOT_FOUND)
+            {
+                outputs.push_back(DXGIOutput(output));
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
 }

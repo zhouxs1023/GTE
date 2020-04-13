@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.04.13
 
 #pragma once
 
@@ -30,6 +30,17 @@ namespace gte
     {
     public:
         template <typename T>
+        static ULONG SafeAddRef(T* object)
+        {
+            if (object)
+            {
+                ULONG refs = object->AddRef();
+                return refs;
+            }
+            return 0;
+        }
+
+        template <typename T>
         static ULONG SafeRelease(T*& object)
         {
             if (object)
@@ -52,6 +63,18 @@ namespace gte
                 {
                     LogError("Reference count is not zero after release.");
                 }
+            }
+            return 0;
+        }
+
+        template <typename T>
+        static ULONG GetNumReferences(T* object)
+        {
+            if (object)
+            {
+                object->AddRef();
+                ULONG refs = object->Release();
+                return refs;
             }
             return 0;
         }

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.02.01
 
 #include "FitCylinderWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -139,7 +139,8 @@ void FitCylinderWindow3::CreateScene()
 #endif
 
 #ifdef USE_COVARIANCE_W_DIRECTION
-    ApprCylinder3<double> fitter(0, 0, 0);
+    // Use the eigenvector associated with the largest eigenvalue of W.
+    ApprCylinder3<double> fitter(2);
 #else
 #ifdef USE_MULTIPLE_THREADS
     // Use all hardware threads available (subject to OS scheduling).

@@ -3,11 +3,10 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 4.0.2020.02.25
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/MeshFactory.h>
-#include <Mathematics/RectangleMesh.h>
 using namespace gte;
 
 MeshFactory::MeshFactory()
@@ -31,41 +30,64 @@ MeshFactory::MeshFactory()
 std::shared_ptr<Visual> MeshFactory::CreateRectangle(unsigned int numXSamples,
     unsigned int numYSamples, float xExtent, float yExtent)
 {
-    // Determine the number of vertices and triangles.
-    MeshDescription desc(MeshTopology::RECTANGLE, numXSamples, numYSamples);
+    // Quantities derived from inputs.
+    float inv0 = 1.0f / (static_cast<float>(numXSamples) - 1.0f);
+    float inv1 = 1.0f / (static_cast<float>(numYSamples) - 1.0f);
+    unsigned int numVertices = numXSamples * numYSamples;
+    unsigned int numTriangles = 2 * (numXSamples - 1) * (numYSamples - 1);
 
-    auto vbuffer = CreateVBuffer(desc.numVertices);
+    // Generate geometry.
+    std::shared_ptr<VertexBuffer> vbuffer = CreateVBuffer(numVertices);
     if (!vbuffer)
     {
         return nullptr;
     }
 
-    auto ibuffer = CreateIBuffer(desc.numTriangles);
+    Vector3<float> pos;
+    Vector3<float> nor{ 0.0f, 0.0f, 1.0f };
+    Vector3<float> tan{ 1.0f, 0.0f, 0.0f };
+    Vector3<float> bin{ 0.0f, 1.0f, 0.0f };  // = Cross(nor,tan)
+    Vector2<float> tcd;
+    pos[2] = 0.0f;
+    for (unsigned int i1 = 0, i = 0; i1 < numYSamples; ++i1)
+    {
+        tcd[1] = i1 * inv1;
+        pos[1] = (2.0f * tcd[1] - 1.0f) * yExtent;
+        for (unsigned int i0 = 0; i0 < numXSamples; ++i0, ++i)
+        {
+            tcd[0] = i0 * inv0;
+            pos[0] = (2.0f * tcd[0] - 1.0f) * xExtent;
+
+            SetPosition(i, pos);
+            SetNormal(i, nor);
+            SetTangent(i, tan);
+            SetBitangent(i, bin);
+            SetTCoord(i, tcd);
+        }
+    }
+
+    // Generate indices.
+    std::shared_ptr<IndexBuffer> ibuffer = CreateIBuffer(numTriangles);
     if (!ibuffer)
     {
         return nullptr;
     }
-
-    size_t stride = static_cast<size_t>(mVFormat.GetVertexSize());
-    desc.vertexAttributes =
+    for (unsigned int i1 = 0, t = 0; i1 < numYSamples - 1; ++i1)
     {
-        VertexAttribute("position", mPositions, stride),
-        VertexAttribute("normal", mNormals, stride),
-        VertexAttribute("tangent", mTangents, stride),
-        VertexAttribute("bitangent", mBitangents, stride),
-        VertexAttribute("tcoord", mTCoords[0], stride)
-    };
+        for (unsigned int i0 = 0; i0 < numXSamples - 1; ++i0)
+        {
+            unsigned int v0 = i0 + numXSamples * i1;
+            unsigned int v1 = v0 + 1;
+            unsigned int v2 = v1 + numXSamples;
+            unsigned int v3 = v0 + numXSamples;
 
-    desc.indexAttribute = IndexAttribute(ibuffer->GetData(), mIndexSize);
+            ibuffer->SetTriangle(t++, v0, v1, v2);
+            ibuffer->SetTriangle(t++, v0, v2, v3);
+        }
+    }
 
-    Rectangle<3, float> rectangle;
-    rectangle.center = { 0.0f, 0.0f, 0.0f };
-    rectangle.axis[0] = { 1.0f, 0.0f, 0.0f };
-    rectangle.axis[1] = { 0.0f, 1.0f, 0.0f };
-    rectangle.extent = { xExtent, yExtent };
-    RectangleMesh<float> mesh(desc, rectangle);
-
-    auto visual = std::make_shared<Visual>(vbuffer, ibuffer);
+    // Create the mesh.
+    std::shared_ptr<Visual> visual(new Visual(vbuffer, ibuffer));
     if (visual)
     {
         visual->UpdateModelBound();

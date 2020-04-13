@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.11.03
+// Version: 4.0.2020.04.04
 
 #pragma once
 
@@ -256,12 +256,12 @@ namespace gte
         }
 
         // Support for std::move.
-        BSNumber(BSNumber&& number)
+        BSNumber(BSNumber&& number) noexcept
         {
             *this = std::move(number);
         }
 
-        BSNumber& operator=(BSNumber&& number)
+        BSNumber& operator=(BSNumber&& number) noexcept
         {
             mSign = number.mSign;
             mBiasedExponent = number.mBiasedExponent;
@@ -278,6 +278,9 @@ namespace gte
         inline void SetSign(int32_t sign)
         {
             mSign = sign;
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+            mValue = (double)*this;
+#endif
         }
 
         inline int32_t GetSign() const
@@ -288,6 +291,9 @@ namespace gte
         inline void SetBiasedExponent(int32_t biasedExponent)
         {
             mBiasedExponent = biasedExponent;
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+            mValue = (double)*this;
+#endif
         }
 
         inline int32_t GetBiasedExponent() const
@@ -298,6 +304,9 @@ namespace gte
         inline void SetExponent(int32_t exponent)
         {
             mBiasedExponent = exponent - mUInteger.GetNumBits() + 1;
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+            mValue = (double)*this;
+#endif
         }
 
         inline int32_t GetExponent() const
@@ -1079,6 +1088,9 @@ namespace gte
 
         output.SetSign(sign);
         output.SetBiasedExponent(outExponent - precisionM1);
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+        output.mValue = (double)output;
+#endif
     }
 }
 

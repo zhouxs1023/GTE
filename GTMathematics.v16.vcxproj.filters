@@ -1404,5 +1404,17 @@
     <ClInclude Include="Mathematics\ApprParallelLines2.h">
       <Filter>Approximation</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\RootsBisection2.h">
+      <Filter>NumericalMethods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\RootsBisection1.h">
+      <Filter>NumericalMethods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\ConvexMesh3.h">
+      <Filter>Primitives\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\IntrConvexMesh3Plane3.h">
+      <Filter>Intersection\3D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

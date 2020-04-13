@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.09.11
+// Version: 4.0.2020.04.04
 
 #pragma once
 
@@ -107,12 +107,12 @@ namespace gte
         // to move everything.  Therefore, the move operator only copies the
         // bits BUT 'number' is modified as if you have stolen the data
         // (mNumBits and mSize set to zero).
-        UIntegerFP32(UIntegerFP32&& number)
+        UIntegerFP32(UIntegerFP32&& number) noexcept
         {
             *this = std::move(number);
         }
 
-        UIntegerFP32& operator=(UIntegerFP32&& number)
+        UIntegerFP32& operator=(UIntegerFP32&& number) noexcept
         {
             mNumBits = number.mNumBits;
             mSize = number.mSize;

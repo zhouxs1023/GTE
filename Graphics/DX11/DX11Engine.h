@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.04.12
 
 #pragma once
 
@@ -167,10 +167,14 @@ namespace gte
         UINT mFlags;
         bool mUseDepth24Stencil8;
 
-        // Objects created by the constructors.
+        // Objects created by the constructors. If the constructors taking an
+        // HWND parameter are called, mIsGraphicsDevice is true. Otherwise,
+        // the constructors are called for computing and mIsGraphicsDevice is
+        // false.
         ID3D11Device* mDevice;
         ID3D11DeviceContext* mImmediate;
         D3D_FEATURE_LEVEL mFeatureLevel;
+        bool mIsGraphicsDevice;
 
         // Objects created by the constructors for graphics engines.
         IDXGISwapChain* mSwapChain;
@@ -318,5 +322,16 @@ namespace gte
             std::shared_ptr<VertexBuffer> const& vbuffer,
             std::shared_ptr<IndexBuffer> const& ibuffer,
             std::shared_ptr<VisualEffect> const& effect) override;
+
+    public:
+        // If the input texture does not match the back-buffer format and
+        // dimensions, it will be recreated.
+        //
+        // TODO: This is specific to the DirectX 11 engine. Add the same
+        // support to the OpenGL engine.
+        void CopyBackBuffer(std::shared_ptr<Texture2>& texture);
+
+    private:
+        ID3D11Texture2D* mBackBufferStaging;
     };
 }

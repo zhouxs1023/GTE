@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.04.13
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Engine.h>
@@ -36,10 +36,7 @@ using namespace gte;
 
 DX11Engine::~DX11Engine()
 {
-    if (mWaitQuery)
-    {
-        mWaitQuery->Release();
-    }
+    DX11::FinalRelease(mWaitQuery);
 
     // The render state objects (and fonts) are destroyed first so that the
     // render state objects are removed from the bridges before they are
@@ -83,13 +80,19 @@ DX11Engine::~DX11Engine()
     }
     mILMap = nullptr;
 
-    DestroyBackBuffer();
-    DestroySwapChain();
+    if (mIsGraphicsDevice)
+    {
+        DestroyBackBuffer();
+        DestroySwapChain();
+    }
     DestroyDevice();
+
+    DX11::SafeRelease(mAdapter);
 }
 
 DX11Engine::DX11Engine()
 {
+    mIsGraphicsDevice = false;
     Initialize(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, false);
     CreateDevice();
 }
@@ -97,15 +100,19 @@ DX11Engine::DX11Engine()
 DX11Engine::DX11Engine(IDXGIAdapter* adapter, D3D_DRIVER_TYPE driverType,
     HMODULE softwareModule, UINT flags)
 {
+    mIsGraphicsDevice = false;
     Initialize(adapter, driverType, softwareModule, flags, false);
     CreateDevice();
 }
 
 DX11Engine::DX11Engine(HWND handle, UINT xSize, UINT ySize, bool useDepth24Stencil8)
 {
+    mIsGraphicsDevice = true;
     Initialize(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, useDepth24Stencil8);
 
-    if (CreateDevice() && CreateSwapChain(handle, xSize, ySize) && CreateBackBuffer(xSize, ySize))
+    if (CreateDevice() &&
+        CreateSwapChain(handle, xSize, ySize) &&
+        CreateBackBuffer(xSize, ySize))
     {
         CreateDefaultObjects();
     }
@@ -122,9 +129,12 @@ DX11Engine::DX11Engine(IDXGIAdapter* adapter, HWND handle, UINT xSize,
     UINT ySize, bool useDepth24Stencil8, D3D_DRIVER_TYPE driverType,
     HMODULE softwareModule, UINT flags)
 {
+    mIsGraphicsDevice = true;
     Initialize(adapter, driverType, softwareModule, flags, useDepth24Stencil8);
 
-    if (CreateDevice() && CreateSwapChain(handle, xSize, ySize) && CreateBackBuffer(xSize, ySize))
+    if (CreateDevice() &&
+        CreateSwapChain(handle, xSize, ySize) &&
+        CreateBackBuffer(xSize, ySize))
     {
         CreateDefaultObjects();
     }
@@ -322,6 +332,8 @@ void DX11Engine::Initialize(IDXGIAdapter* adapter, D3D_DRIVER_TYPE driverType,
 {
     // Initialization of DX11Engine members.
     mAdapter = adapter;
+    DX11::SafeAddRef(mAdapter);
+
     mDriverType = driverType;
     mSoftwareModule = softwareModule;
     mFlags = flags;
@@ -349,6 +361,8 @@ void DX11Engine::Initialize(IDXGIAdapter* adapter, D3D_DRIVER_TYPE driverType,
     mSaveRT.fill(nullptr);
     mSaveDS = nullptr;
     mWaitQuery = nullptr;
+
+    mBackBufferStaging = nullptr;
 
     // Initialization of GraphicsEngine members that depend on DX11.
     mILMap = std::make_unique<DX11InputLayoutManager>();
@@ -405,7 +419,7 @@ bool DX11Engine::CreateDevice()
     HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
     if (FAILED(hr))
     {
-        factory->Release();
+        DX11::SafeRelease(factory);
         return false;
     }
 
@@ -416,7 +430,7 @@ bool DX11Engine::CreateDevice()
             IDXGIAdapter1* adapter = nullptr;
             if (factory->EnumAdapters1(i, &adapter) == DXGI_ERROR_NOT_FOUND)
             {
-                factory->Release();
+                DX11::SafeRelease(factory);
                 return false;
             }
 
@@ -424,8 +438,8 @@ bool DX11Engine::CreateDevice()
             hr = adapter->GetDesc1(&desc);
             if (FAILED(hr))
             {
-                factory->Release();
-                adapter->Release();
+                DX11::SafeRelease(factory);
+                DX11::SafeRelease(adapter);
                 return false;
             }
 
@@ -434,8 +448,7 @@ bool DX11Engine::CreateDevice()
                 if (CreateBestMatchingDevice())
                 {
                     mAdapter = adapter;
-                    factory->Release();
-                    adapter->Release();
+                    DX11::SafeRelease(factory);
                     return true;
                 }
             }
@@ -445,8 +458,7 @@ bool DX11Engine::CreateDevice()
                 if (CreateBestMatchingDevice())
                 {
                     mAdapter = adapter;
-                    factory->Release();
-                    adapter->Release();
+                    DX11::SafeRelease(factory);
                     return true;
                 }
                 else
@@ -457,7 +469,7 @@ bool DX11Engine::CreateDevice()
         }
     }
 
-    factory->Release();
+    DX11::SafeRelease(factory);
     return false;
 }
 
@@ -611,6 +623,14 @@ bool DX11Engine::CreateBackBuffer(UINT xSize, UINT ySize)
     DX11Log(DX11::SetPrivateName(bb.colorView, "DX11Engine::mColorView"));
 #endif
 
+    D3D11_TEXTURE2D_DESC bbdesc;
+    bb.colorBuffer->GetDesc(&bbdesc);
+    bbdesc.BindFlags = 0;
+    bbdesc.CPUAccessFlags = D3D10_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+    bbdesc.Usage = D3D11_USAGE_STAGING;
+    mBackBufferStaging = nullptr;
+    DX11Log(mDevice->CreateTexture2D(&bbdesc, nullptr, &mBackBufferStaging));
+
     // Create the depth-stencil buffer and its view.
     D3D11_TEXTURE2D_DESC desc;
     desc.Width = xSize;
@@ -687,20 +707,8 @@ bool DX11Engine::DestroyDevice()
 
 bool DX11Engine::DestroySwapChain()
 {
-    bool successful = true;
-    ULONG refs;
-
-    if (mSwapChain)
-    {
-        refs = mSwapChain->Release();
-        if (refs > 0)
-        {
-            LogError("Swap chain not released.");
-        }
-        mSwapChain = nullptr;
-    }
-
-    return successful;
+    DX11::FinalRelease(mSwapChain);
+    return true;
 }
 
 bool DX11Engine::DestroyBackBuffer()
@@ -717,6 +725,7 @@ bool DX11Engine::DestroyBackBuffer()
 
     return DX11::FinalRelease(mColorView) == 0
         && DX11::FinalRelease(mColorBuffer) == 0
+        && DX11::FinalRelease(mBackBufferStaging) == 0
         && DX11::FinalRelease(mDepthStencilView) == 0
         && DX11::FinalRelease(mDepthStencilBuffer) == 0;
 }
@@ -820,7 +829,7 @@ uint64_t DX11Engine::EndOcclusionQuery(ID3D11Query* occlusionQuery)
         {
             // Wait for end of query.
         }
-        occlusionQuery->Release();
+        DX11::SafeRelease(occlusionQuery);
         return data;
     }
 
@@ -1280,7 +1289,7 @@ void DX11Engine::ClearColorBuffer()
         if (rtViews[i])
         {
             mImmediate->ClearRenderTargetView(rtViews[i], mClearColor.data());
-            rtViews[i]->Release();
+            DX11::SafeRelease(rtViews[i]);
         }
     }
 }
@@ -1294,7 +1303,7 @@ void DX11Engine::ClearDepthBuffer()
     if (dsView)
     {
         mImmediate->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH, mClearDepth, 0);
-        dsView->Release();
+        DX11::SafeRelease(dsView);
     }
 }
 
@@ -1308,7 +1317,7 @@ void DX11Engine::ClearStencilBuffer()
     {
         mImmediate->ClearDepthStencilView(dsView, D3D11_CLEAR_STENCIL, 0.0f,
             static_cast<UINT8>(mClearStencil));
-        dsView->Release();
+        DX11::SafeRelease(dsView);
     }
 }
 
@@ -1323,7 +1332,7 @@ void DX11Engine::ClearBuffers()
         if (rtViews[i])
         {
             mImmediate->ClearRenderTargetView(rtViews[i], mClearColor.data());
-            rtViews[i]->Release();
+            DX11::SafeRelease(rtViews[i]);
         }
     }
     if (dsView)
@@ -1331,7 +1340,7 @@ void DX11Engine::ClearBuffers()
         mImmediate->ClearDepthStencilView(dsView,
             D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, mClearDepth,
             static_cast<UINT8>(mClearStencil));
-        dsView->Release();
+        DX11::SafeRelease(dsView);
     }
 }
 
@@ -1777,6 +1786,43 @@ void DX11Engine::WaitForFinish()
 void DX11Engine::Flush()
 {
     mImmediate->Flush();
+}
+
+void DX11Engine::CopyBackBuffer(std::shared_ptr<Texture2>& texture)
+{
+    if (!mColorBuffer)
+    {
+        return;
+    }
+
+    // The format and dimensions of the texture must match those of the
+    // back buffer.
+    D3D11_TEXTURE2D_DESC desc;
+    mColorBuffer->GetDesc(&desc);
+    if (!texture ||
+        texture->GetFormat() != DF_R8G8B8A8_UNORM ||
+        texture->GetWidth() != desc.Width ||
+        texture->GetHeight() != desc.Height)
+    {
+        texture = std::make_shared<Texture2>(DF_R8G8B8A8_UNORM, desc.Width, desc.Height);
+    }
+
+    // Copy the back buffer to the staging texture.
+    mImmediate->CopyResource(mBackBufferStaging, mColorBuffer);
+
+    // Map the staging texture and copy it to the input texture.
+    D3D11_MAPPED_SUBRESOURCE subresource;
+    DX11Log(mImmediate->Map(mBackBufferStaging, 0, D3D11_MAP_READ_WRITE, 0, &subresource));
+    uint32_t const pitch = 4 * desc.Width;
+    uint8_t const* source = static_cast<uint8_t const*>(subresource.pData);
+    size_t const numBytes = 4 * static_cast<size_t>(desc.Width);
+    uint8_t* target = texture->Get<uint8_t>();
+    for (uint32_t i = 0; i < desc.Height; ++i)
+    {
+        std::memcpy(target, source, numBytes);
+        source += subresource.RowPitch;
+        target += pitch;
+    }
 }
 
 uint64_t DX11Engine::DrawPrimitive(std::shared_ptr<VertexBuffer> const& vbuffer,

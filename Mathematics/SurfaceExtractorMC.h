@@ -166,7 +166,8 @@ namespace gte
         {
             std::vector<Vector3<Real>> outVertices;
             std::vector<int> outIndices;
-            UniqueVerticesTriangles<Vector3<Real>>(vertices, indices, outVertices, outIndices);
+            UniqueVerticesTriangles<Vector3<Real>> uvt;
+            uvt.RemoveDuplicateVertices(vertices, indices, outVertices, outIndices);
             vertices = std::move(outVertices);
             indices = std::move(outIndices);
         }

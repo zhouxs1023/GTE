@@ -609,6 +609,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GenerateOpenGLWrapper.v14",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PrecisionCalculator.v14", "Tools\PrecisionCalculator\PrecisionCalculator.v14.vcxproj", "{67C8DE4D-1934-4852-821C-B6C69621BD45}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectPlaneConvexPolyhedronDX11.v14", "Samples\Intersection\IntersectPlaneConvexPolyhedron\IntersectPlaneConvexPolyhedronDX11.v14.vcxproj", "{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectPlaneConvexPolyhedronGL45.v14", "Samples\Intersection\IntersectPlaneConvexPolyhedron\IntersectPlaneConvexPolyhedronGL45.v14.vcxproj", "{9D2599E0-8AFB-43B5-84F7-DC6B192EB401}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -2809,6 +2813,22 @@ Global
 		{67C8DE4D-1934-4852-821C-B6C69621BD45}.Release|x64.Build.0 = Release|x64
 		{67C8DE4D-1934-4852-821C-B6C69621BD45}.Release|x86.ActiveCfg = Release|Win32
 		{67C8DE4D-1934-4852-821C-B6C69621BD45}.Release|x86.Build.0 = Release|Win32
+		{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE}.Debug|x64.ActiveCfg = Debug|x64
+		{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE}.Debug|x64.Build.0 = Debug|x64
+		{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE}.Debug|x86.ActiveCfg = Debug|Win32
+		{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE}.Debug|x86.Build.0 = Debug|Win32
+		{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE}.Release|x64.ActiveCfg = Release|x64
+		{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE}.Release|x64.Build.0 = Release|x64
+		{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE}.Release|x86.ActiveCfg = Release|Win32
+		{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE}.Release|x86.Build.0 = Release|Win32
+		{9D2599E0-8AFB-43B5-84F7-DC6B192EB401}.Debug|x64.ActiveCfg = Debug|x64
+		{9D2599E0-8AFB-43B5-84F7-DC6B192EB401}.Debug|x64.Build.0 = Debug|x64
+		{9D2599E0-8AFB-43B5-84F7-DC6B192EB401}.Debug|x86.ActiveCfg = Debug|Win32
+		{9D2599E0-8AFB-43B5-84F7-DC6B192EB401}.Debug|x86.Build.0 = Debug|Win32
+		{9D2599E0-8AFB-43B5-84F7-DC6B192EB401}.Release|x64.ActiveCfg = Release|x64
+		{9D2599E0-8AFB-43B5-84F7-DC6B192EB401}.Release|x64.Build.0 = Release|x64
+		{9D2599E0-8AFB-43B5-84F7-DC6B192EB401}.Release|x86.ActiveCfg = Release|Win32
+		{9D2599E0-8AFB-43B5-84F7-DC6B192EB401}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -3114,5 +3134,7 @@ Global
 		{2DAA3A00-BE9F-4CBB-9D6D-9AE99B031DE2} = {E763F9F7-4CB1-4255-B2BE-D928B389B67C}
 		{090816ED-7939-4EE8-AD14-93881D57AC23} = {E763F9F7-4CB1-4255-B2BE-D928B389B67C}
 		{67C8DE4D-1934-4852-821C-B6C69621BD45} = {E763F9F7-4CB1-4255-B2BE-D928B389B67C}
+		{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE} = {DB0AB56D-5BBC-4D82-B771-D0942C8D3BCF}
+		{9D2599E0-8AFB-43B5-84F7-DC6B192EB401} = {C63035EB-1E2F-4C14-AB0E-79A4BDAB15E4}
 	EndGlobalSection
 EndGlobal

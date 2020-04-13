@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.04.13
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/HLSLShaderFactory.h>
@@ -56,7 +56,7 @@ HLSLReflection HLSLShaderFactory::CreateFromBytecode(
         // Errors are recorded to a logfile by ReflectShader.
         shader = HLSLReflection();
     }
-    compiledCode->Release();
+    DX11::SafeRelease(compiledCode);
     return shader;
 }
 
@@ -82,7 +82,7 @@ HLSLReflection HLSLShaderFactory::CompileAndReflect(std::string const& name,
             // Errors are recorded to a logfile by ReflectShader.
             shader = HLSLReflection();
         }
-        compiledCode->Release();
+        DX11::SafeRelease(compiledCode);
         return shader;
     }
     else
@@ -187,11 +187,7 @@ ID3DBlob* HLSLShaderFactory::CompileShader(std::string const& name,
         }
     }
 
-    if (errors)
-    {
-        errors->Release();
-    }
-
+    DX11::SafeRelease(errors);
     return compiledCode;
 }
 
@@ -228,7 +224,7 @@ bool HLSLShaderFactory::ReflectShader(std::string const& name,
         }
     }
 
-    reflector->Release();
+    DX11::SafeRelease(reflector);
     return success;
 }
 

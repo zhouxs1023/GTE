@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.03.18
 
 #pragma once
 
@@ -42,6 +42,12 @@ namespace gte
 
         // Enumeration of adapters on a machine.
         static void Enumerate(std::vector<DXGIAdapter>& adapters);
+
+        // Choose the most powerful adapter. A discrete GPU is preferred.
+        // If not available, Intel Integrated Graphics is preferred. If
+        // not available, Microsoft WARP (software implementation of DX11)
+        // will be chosen.
+        static DXGIAdapter GetMostPowerful();
 
     private:
         IDXGIAdapter1* mAdapter;

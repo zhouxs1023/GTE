@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.03.25
 
 #pragma once
 
@@ -15,12 +15,15 @@ namespace gte
 {
     class Font
     {
-    public:
+        // Abstract base class.
+    protected:
         // Construction.
         Font(std::shared_ptr<ProgramFactory> const& factory,
             unsigned int width, unsigned int height,
             unsigned char const* texels, float const* characterData,
             unsigned int maxMessageLength);
+    public:
+        virtual ~Font() = default;
 
         // Member access.
         inline std::shared_ptr<TextEffect> const& GetTextEffect() const

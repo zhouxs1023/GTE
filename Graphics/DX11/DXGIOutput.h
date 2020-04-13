@@ -47,6 +47,9 @@ namespace gte
         HRESULT FindClosestMatchingMode(DXGI_MODE_DESC const& requested,
             DXGI_MODE_DESC& closest);
 
+        // Enumeration of monitors attached to the adapter (if any).
+        static void Enumerate(IDXGIAdapter* adapter, std::vector<DXGIOutput>& outputs);
+
     private:
         IDXGIOutput* mOutput;
         DXGI_OUTPUT_DESC mDescription;

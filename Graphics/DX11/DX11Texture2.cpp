@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.04.13
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Texture2.h>
@@ -90,7 +90,7 @@ DX11Texture2::DX11Texture2(ID3D11Device* device, Texture2 const* texture)
         ID3D11DeviceContext* context;
         device->GetImmediateContext(&context);
         context->GenerateMips(mSRView);
-        context->Release();
+        DX11::SafeRelease(context);
     }
 }
 
@@ -153,7 +153,7 @@ ID3D11Texture2D* DX11Texture2::CreateSharedDXObject(ID3D11Device* device) const
 
     HANDLE handle = nullptr;
     DX11Log(resource->GetSharedHandle(&handle));
-    resource->Release();
+    DX11::SafeRelease(resource);
 
     ID3D11Texture2D* dxShared = nullptr;
     DX11Log(device->OpenSharedResource(handle, __uuidof(ID3D11Texture2D), (void**)& dxShared));

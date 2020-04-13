@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.11.03
+// Version: 4.0.2020.04.04
 
 #pragma once
 
@@ -324,12 +324,12 @@ namespace gte
         }
 
         // Support for move semantics.
-        BSRational(BSRational&& r)
+        BSRational(BSRational&& r) noexcept
         {
             *this = std::move(r);
         }
 
-        BSRational& operator=(BSRational&& r)
+        BSRational& operator=(BSRational&& r) noexcept
         {
             mNumerator = std::move(r.mNumerator);
             mDenominator = std::move(r.mDenominator);
@@ -666,6 +666,19 @@ namespace gte
                 n = two * (n - d);
                 bits[current] |= mask;
                 lastBit = 1;
+                if (n.GetSign() == 0)
+                {
+                    // The input rational has a finite number of bits in its
+                    // representation, so it is exactly a BSNumber.
+                    if (i > 0)
+                    {
+                        // The number n is zero for the remainder of the loop,
+                        // so the last bit of the p-bit precision pattern is
+                        // a zero. There is no need to continue looping.
+                        lastBit = 0;
+                    }
+                    break;
+                }
             }
 
             if (mask == 0x00000001u)
@@ -719,12 +732,24 @@ namespace gte
         // else roundingMode == FE_TOWARDZERO. Truncate the r bits, which
         // requires no additional work.
 
+        // Shift the bits if necessary to obtain the invariant that BSNumber
+        // objects have bit patterns that are odd integers.
+        if ((w.GetBits()[0] & 1) == 0)
+        {
+            UInteger temp = w;
+            auto shift = w.ShiftRightToOdd(temp);
+            pmq += shift;
+        }
+
         // Do not use SetExponent(pmq) at this step. The number of
         // requested bits is 'precision' but w.GetNumBits() will be
         // different when round-up occurs, and SetExponent accesses
         // w.GetNumBits().
         output.SetSign(sign);
         output.SetBiasedExponent(pmq - precisionM1);
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+        output.mValue = (double)output;
+#endif
     }
 
     // This conversion is used to avoid having to expose BSNumber in the

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.09.11
+// Version: 4.0.2020.04.04
 
 #pragma once
 
@@ -113,12 +113,12 @@ namespace gte
         }
 
         // Support for std::move.
-        UIntegerAP32(UIntegerAP32&& number)
+        UIntegerAP32(UIntegerAP32&& number) noexcept
         {
             *this = std::move(number);
         }
 
-        UIntegerAP32& operator=(UIntegerAP32&& number)
+        UIntegerAP32& operator=(UIntegerAP32&& number) noexcept
         {
             mNumBits = number.mNumBits;
             mBits = std::move(number.mBits);

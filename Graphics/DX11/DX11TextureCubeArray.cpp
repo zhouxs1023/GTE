@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.04.13
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11TextureCubeArray.h>
@@ -91,7 +91,7 @@ DX11TextureCubeArray::DX11TextureCubeArray(ID3D11Device* device, TextureCubeArra
         ID3D11DeviceContext* context;
         device->GetImmediateContext(&context);
         context->GenerateMips(mSRView);
-        context->Release();
+        DX11::SafeRelease(context);
     }
 }
 

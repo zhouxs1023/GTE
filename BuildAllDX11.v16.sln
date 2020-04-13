@@ -307,6 +307,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GenerateOpenGLWrapper.v16",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PrecisionCalculator.v16", "Tools\PrecisionCalculator\PrecisionCalculator.v16.vcxproj", "{67C8DE4D-1934-4852-821C-B6C69621BD45}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectPlaneConvexPolyhedronDX11.v16", "Samples\Intersection\IntersectPlaneConvexPolyhedron\IntersectPlaneConvexPolyhedronDX11.v16.vcxproj", "{73500C1A-EE64-4CCB-8B58-3618EB0934E0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1443,6 +1445,14 @@ Global
 		{67C8DE4D-1934-4852-821C-B6C69621BD45}.Release|x64.Build.0 = Release|x64
 		{67C8DE4D-1934-4852-821C-B6C69621BD45}.Release|x86.ActiveCfg = Release|Win32
 		{67C8DE4D-1934-4852-821C-B6C69621BD45}.Release|x86.Build.0 = Release|Win32
+		{73500C1A-EE64-4CCB-8B58-3618EB0934E0}.Debug|x64.ActiveCfg = Debug|x64
+		{73500C1A-EE64-4CCB-8B58-3618EB0934E0}.Debug|x64.Build.0 = Debug|x64
+		{73500C1A-EE64-4CCB-8B58-3618EB0934E0}.Debug|x86.ActiveCfg = Debug|Win32
+		{73500C1A-EE64-4CCB-8B58-3618EB0934E0}.Debug|x86.Build.0 = Debug|Win32
+		{73500C1A-EE64-4CCB-8B58-3618EB0934E0}.Release|x64.ActiveCfg = Release|x64
+		{73500C1A-EE64-4CCB-8B58-3618EB0934E0}.Release|x64.Build.0 = Release|x64
+		{73500C1A-EE64-4CCB-8B58-3618EB0934E0}.Release|x86.ActiveCfg = Release|Win32
+		{73500C1A-EE64-4CCB-8B58-3618EB0934E0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1597,6 +1607,7 @@ Global
 		{2DAA3A00-BE9F-4CBB-9D6D-9AE99B031DE2} = {CA868431-5690-4E3C-91BE-78A53AEE606A}
 		{090816ED-7939-4EE8-AD14-93881D57AC23} = {CA868431-5690-4E3C-91BE-78A53AEE606A}
 		{67C8DE4D-1934-4852-821C-B6C69621BD45} = {CA868431-5690-4E3C-91BE-78A53AEE606A}
+		{73500C1A-EE64-4CCB-8B58-3618EB0934E0} = {F84119C4-DF25-4BA2-BBB2-4B05A3854AA8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5586B06E-6A73-4B04-94D8-A1AC264A9C83}

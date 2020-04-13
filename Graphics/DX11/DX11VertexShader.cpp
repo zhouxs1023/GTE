@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.04.13
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11VertexShader.h>
@@ -114,7 +114,7 @@ void DX11VertexShader::EnableUAView(ID3D11DeviceContext* context,
             D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr,
             bindPoint, 1, uaViews, initialCounts);
 
-        device->Release();
+        DX11::SafeRelease(device);
     }
 }
 
@@ -135,7 +135,7 @@ void DX11VertexShader::DisableUAView(ID3D11DeviceContext* context,
             D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr,
             bindPoint, 1, uaViews, initialCounts);
 
-        device->Release();
+        DX11::SafeRelease(device);
     }
 }
 

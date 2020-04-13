@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.1.2019.10.17
+// Version: 4.1.2020.04.04
 
 #pragma once
 
@@ -28,28 +28,28 @@ namespace gte
             :
             mEndpoints{ static_cast<APType>(0), static_cast<APType>(0) }
         {
-            static_assert(gte::is_arbitrary_precision<APType>::value, "Invalid type.");
+            static_assert(is_arbitrary_precision<APType>::value, "Invalid type.");
         }
 
         APInterval(APInterval const& other)
             :
             mEndpoints(other.mEndpoints)
         {
-            static_assert(gte::is_arbitrary_precision<APType>::value, "Invalid type.");
+            static_assert(is_arbitrary_precision<APType>::value, "Invalid type.");
         }
 
         explicit APInterval(APType e)
             :
             mEndpoints{ e, e }
         {
-            static_assert(gte::is_arbitrary_precision<APType>::value, "Invalid type.");
+            static_assert(is_arbitrary_precision<APType>::value, "Invalid type.");
         }
 
         APInterval(APType e0, APType e1)
             :
             mEndpoints{ e0, e1 }
         {
-            static_assert(gte::is_arbitrary_precision<APType>::value, "Invalid type.");
+            static_assert(is_arbitrary_precision<APType>::value, "Invalid type.");
 #if defined(GTE_THROW_ON_INVALID_APINTERVAL)
             LogAssert(mEndpoints[0] <= mEndpoints[1], "Invalid interval.");
 #endif
@@ -59,7 +59,7 @@ namespace gte
             :
             mEndpoints(endpoint)
         {
-            static_assert(gte::is_arbitrary_precision<APType>::value, "Invalid type.");
+            static_assert(is_arbitrary_precision<APType>::value, "Invalid type.");
 #if defined(GTE_THROW_ON_INVALID_APINTERVAL)
             LogAssert(mEndpoints[0] <= mEndpoints[1], "Invalid interval.");
 #endif
@@ -67,7 +67,7 @@ namespace gte
 
         APInterval& operator=(APInterval const& other)
         {
-            static_assert(gte::is_arbitrary_precision<APType>::value, "Invalid type.");
+            static_assert(is_arbitrary_precision<APType>::value, "Invalid type.");
             mEndpoints = other.mEndpoints;
             return *this;
         }
