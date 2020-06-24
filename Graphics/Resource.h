@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.06.02
 
 #pragma once
 
@@ -113,6 +113,12 @@ namespace gte
         }
 
         template <typename T>
+        inline void Set(T* data)
+        {
+            mData = reinterpret_cast<char*>(data);
+        }
+
+        template <typename T>
         inline T const* Get() const
         {
             return reinterpret_cast<T const*>(mData);
@@ -122,6 +128,11 @@ namespace gte
         inline T* Get()
         {
             return reinterpret_cast<T*>(mData);
+        }
+
+        inline void Reset()
+        {
+            mData = (mStorage.size() > 0 ? mStorage.data() : nullptr);
         }
 
         // Specify a contiguous block of active elements in the resource.  An

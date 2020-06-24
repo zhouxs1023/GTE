@@ -417,7 +417,7 @@ R"raw(#pragma once
 #include <Applications/Window3.h>
 using namespace gte;
 
-class _PROJECT_NAME_Window3: public Window3
+class _PROJECT_NAME_Window3 : public Window3
 {
 public:
     _PROJECT_NAME_Window3(Parameters& parameters);

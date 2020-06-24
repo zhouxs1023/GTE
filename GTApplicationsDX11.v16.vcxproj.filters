@@ -73,6 +73,9 @@
     <ClCompile Include="Applications\MSW\ConsoleSystem.cpp">
       <Filter>MSW</Filter>
     </ClCompile>
+    <ClCompile Include="Applications\MSW\WICFileIONative.cpp">
+      <Filter>MSW</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Applications\Command.h">
@@ -144,6 +147,9 @@
       <Filter>MSW</Filter>
     </ClInclude>
     <ClInclude Include="Applications\MSW\ConsoleSystem.h">
+      <Filter>MSW</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\MSW\WICFileIONative.h">
       <Filter>MSW</Filter>
     </ClInclude>
   </ItemGroup>

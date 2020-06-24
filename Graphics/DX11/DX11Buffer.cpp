@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.05.28
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Buffer.h>
@@ -119,10 +119,19 @@ void DX11Buffer::CopyGpuToGpu(ID3D11DeviceContext* context, ID3D11Resource* targ
     UINT numActiveBytes = buffer->GetNumActiveBytes();
     if (numActiveBytes > 0)
     {
-        // Copy from GPU memory to staging buffer.
-        unsigned int offsetInBytes = buffer->GetOffset() * buffer->GetElementSize();
-        D3D11_BOX box = { offsetInBytes, 0, 0, offsetInBytes + numActiveBytes, 1, 1 };
-        context->CopySubresourceRegion(target, 0, offsetInBytes, 0, 0, GetDXBuffer(), 0, &box);
+        unsigned int offset = buffer->GetOffset();
+        if (offset == 0 && numActiveBytes == buffer->GetNumBytes())
+        {
+            // Copy the entire source to the target.
+            context->CopyResource(target, GetDXBuffer());
+        }
+        else
+        {
+            // Copy only a subset of the source to the target.
+            unsigned int offsetInBytes = offset * buffer->GetElementSize();
+            D3D11_BOX box = { offsetInBytes, 0, 0, offsetInBytes + numActiveBytes, 1, 1 };
+            context->CopySubresourceRegion(target, 0, offsetInBytes, 0, 0, GetDXBuffer(), 0, &box);
+        }
     }
     else
     {

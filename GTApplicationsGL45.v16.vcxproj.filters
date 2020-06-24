@@ -91,6 +91,9 @@
     <ClCompile Include="Applications\GLX\ConsoleSystem.cpp">
       <Filter>GLX</Filter>
     </ClCompile>
+    <ClCompile Include="Applications\MSW\WICFileIONative.cpp">
+      <Filter>MSW</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Applications\CameraRig.h">
@@ -178,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="Applications\GLX\ConsoleSystem.h">
       <Filter>GLX</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\MSW\WICFileIONative.h">
+      <Filter>MSW</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

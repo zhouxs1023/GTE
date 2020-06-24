@@ -288,6 +288,10 @@ namespace gte
                 mDenominator = 1;
             }
             mNumerator.SetSign(sign);
+
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+            mValue = (double)*this;
+#endif
         }
 
         BSRational(const char* number)
@@ -603,9 +607,9 @@ namespace gte
             LogError("Precision must be positive.");
         }
 
-        int64_t const maxSize = static_cast<int64_t>(UInteger::GetMaxSize());
-        int64_t const excess = 32LL * maxSize - static_cast<int64_t>(precision);
-        if (excess <= 0)
+        size_t const maxNumBlocks = UInteger::GetMaxSize();
+        size_t const numPrecBlocks = static_cast<size_t>((precision + 31) / 32);
+        if (numPrecBlocks >= maxNumBlocks)
         {
             LogError("The maximum precision has been exceeded.");
         }
