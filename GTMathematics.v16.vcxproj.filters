@@ -1416,5 +1416,11 @@
     <ClInclude Include="Mathematics\IntrConvexMesh3Plane3.h">
       <Filter>Intersection\3D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\RemezAlgorithm.h">
+      <Filter>NumericalMethods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\RotationEstimate.h">
+      <Filter>NumericalMethods</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

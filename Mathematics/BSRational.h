@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.04.04
+// Version: 4.0.2020.07.21
 
 #pragma once
 
@@ -348,6 +348,9 @@ namespace gte
         {
             mNumerator.SetSign(sign);
             mDenominator.SetSign(1);
+#if defined(GTL_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+            mValue = sign * std::fabs(mValue);
+#endif
         }
 
         inline int GetSign() const

@@ -19,33 +19,33 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{741CFCD7-01A2-4325-AF0D-6678F7686FD8}</ProjectGuid>
+    <ProjectGuid>{606EC0DE-F274-4423-B283-38187426449B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>GTApplicationsDX11.v14</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <RootNamespace>RotationApproximation.v14</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -71,161 +71,127 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>_Output\Applications\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>_Output\Applications\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>_Output\Applications\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>_Output\Applications\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>_Output\Applications\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>_Output\Applications\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>_Output\Applications\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>_Output\Applications\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PrecompiledHeaderFile>Applications/GTApplicationsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile />
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PrecompiledHeaderFile>Applications/GTApplicationsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile />
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PrecompiledHeaderFile>Applications/GTApplicationsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile />
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PrecompiledHeaderFile>Applications/GTApplicationsPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile />
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="GTGraphics.v14.vcxproj">
-      <Project>{7be071fb-e33c-4903-9278-6d12bba46e0d}</Project>
-    </ProjectReference>
-    <ProjectReference Include="GTGraphicsDX11.v14.vcxproj">
-      <Project>{56d7218d-8ccb-49a4-a2b9-d38d538ea42e}</Project>
-    </ProjectReference>
+    <ClInclude Include="RemezConstrained.h" />
+    <ClInclude Include="RemezRotC0.h" />
+    <ClInclude Include="RemezRotC1.h" />
+    <ClInclude Include="RemezRotC2.h" />
+    <ClInclude Include="RemezRotC3.h" />
+    <ClInclude Include="RotationApproximationConsole.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Applications\Application.h" />
-    <ClInclude Include="Applications\CameraRig.h" />
-    <ClInclude Include="Applications\Command.h" />
-    <ClInclude Include="Applications\Console.h" />
-    <ClInclude Include="Applications\ConsoleApplication.h" />
-    <ClInclude Include="Applications\Environment.h" />
-    <ClInclude Include="Applications\GTApplications.h" />
-    <ClInclude Include="Applications\GTApplicationsPCH.h" />
-    <ClInclude Include="Applications\LogReporter.h" />
-    <ClInclude Include="Applications\MSW\Console.h" />
-    <ClInclude Include="Applications\MSW\ConsoleSystem.h" />
-    <ClInclude Include="Applications\MSW\LogToMessageBox.h" />
-    <ClInclude Include="Applications\MSW\LogToOutputWindow.h" />
-    <ClInclude Include="Applications\MSW\WICFileIO.h" />
-    <ClInclude Include="Applications\MSW\WICFileIONative.h" />
-    <ClInclude Include="Applications\MSW\Window.h" />
-    <ClInclude Include="Applications\MSW\WindowSystem.h" />
-    <ClInclude Include="Applications\OnIdleTimer.h" />
-    <ClInclude Include="Applications\Timer.h" />
-    <ClInclude Include="Applications\TrackBall.h" />
-    <ClInclude Include="Applications\TrackCylinder.h" />
-    <ClInclude Include="Applications\TrackObject.h" />
-    <ClInclude Include="Applications\WICFileIO.h" />
-    <ClInclude Include="Applications\Window2.h" />
-    <ClInclude Include="Applications\Window3.h" />
-    <ClInclude Include="Applications\WindowApplication.h" />
+    <ClCompile Include="RemezConstrained.cpp" />
+    <ClCompile Include="RemezRotC0.cpp" />
+    <ClCompile Include="RemezRotC1.cpp" />
+    <ClCompile Include="RemezRotC2.cpp" />
+    <ClCompile Include="RemezRotC3.cpp" />
+    <ClCompile Include="RotationApproximationConsole.cpp" />
+    <ClCompile Include="RotationApproximationMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Applications\Application.cpp" />
-    <ClCompile Include="Applications\CameraRig.cpp" />
-    <ClCompile Include="Applications\Command.cpp" />
-    <ClCompile Include="Applications\ConsoleApplication.cpp" />
-    <ClCompile Include="Applications\Environment.cpp" />
-    <ClCompile Include="Applications\GTApplications.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Applications\LogReporter.cpp" />
-    <ClCompile Include="Applications\MSW\Console.cpp" />
-    <ClCompile Include="Applications\MSW\ConsoleSystem.cpp" />
-    <ClCompile Include="Applications\MSW\LogToMessageBox.cpp" />
-    <ClCompile Include="Applications\MSW\LogToOutputWindow.cpp" />
-    <ClCompile Include="Applications\MSW\WICFileIO.cpp" />
-    <ClCompile Include="Applications\MSW\WICFileIONative.cpp" />
-    <ClCompile Include="Applications\MSW\Window.cpp" />
-    <ClCompile Include="Applications\MSW\WindowSystem.cpp" />
-    <ClCompile Include="Applications\OnIdleTimer.cpp" />
-    <ClCompile Include="Applications\Timer.cpp" />
-    <ClCompile Include="Applications\TrackBall.cpp" />
-    <ClCompile Include="Applications\TrackCylinder.cpp" />
-    <ClCompile Include="Applications\TrackObject.cpp" />
-    <ClCompile Include="Applications\Window2.cpp" />
-    <ClCompile Include="Applications\Window3.cpp" />
-    <ClCompile Include="Applications\WindowApplication.cpp" />
+    <ProjectReference Include="..\..\GTApplicationsDX11.v14.vcxproj">
+      <Project>{741CFCD7-01A2-4325-AF0D-6678F7686FD8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GTGraphics.v14.vcxproj">
+      <Project>{7BE071FB-E33C-4903-9278-6D12BBA46E0D}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GTGraphicsDX11.v14.vcxproj">
+      <Project>{56D7218D-8CCB-49A4-A2B9-D38D538EA42E}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

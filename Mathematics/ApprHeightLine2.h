@@ -8,7 +8,7 @@
 #pragma once
 
 #include <Mathematics/ApprQuery.h>
-#include <Mathematics/Matrix2x2.h>
+#include <Mathematics/Vector2.h>
 
 // Least-squares fit of a line to height data (x,f(x)). The line is of the
 // form: (y - yAvr) = a*(x - xAvr), where (xAvr,yAvr) is the average of the

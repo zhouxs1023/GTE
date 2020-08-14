@@ -401,6 +401,7 @@
     <ClInclude Include="Mathematics\RectangleManager.h" />
     <ClInclude Include="Mathematics\RectangleMesh.h" />
     <ClInclude Include="Mathematics\RectanglePatchMesh.h" />
+    <ClInclude Include="Mathematics\RemezAlgorithm.h" />
     <ClInclude Include="Mathematics\RevolutionMesh.h" />
     <ClInclude Include="Mathematics\RiemannianGeodesic.h" />
     <ClInclude Include="Mathematics\RigidBody.h" />
@@ -410,6 +411,7 @@
     <ClInclude Include="Mathematics\RootsBrentsMethod.h" />
     <ClInclude Include="Mathematics\RootsPolynomial.h" />
     <ClInclude Include="Mathematics\Rotation.h" />
+    <ClInclude Include="Mathematics\RotationEstimate.h" />
     <ClInclude Include="Mathematics\Sector2.h" />
     <ClInclude Include="Mathematics\Segment.h" />
     <ClInclude Include="Mathematics\SeparatePoints2.h" />

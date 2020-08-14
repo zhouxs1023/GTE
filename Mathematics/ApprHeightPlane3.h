@@ -3,12 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.07.20
 
 #pragma once
 
 #include <Mathematics/ApprQuery.h>
-#include <Mathematics/Matrix3x3.h>
+#include <Mathematics/Vector3.h>
 
 // Least-squares fit of a plane to height data (x,y,f(x,y)). The plane is of
 // the form (z - zAvr) = a*(x - xAvr) + b*(y - yAvr), where (xAvr,yAvr,zAvr)
