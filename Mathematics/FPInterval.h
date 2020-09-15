@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.1.2019.10.09
+// Version: 4.1.2020.09.08
 
 #pragma once
 
@@ -289,6 +289,20 @@ namespace gte
         return FPInterval<FPType>::Add(u[0], u[1], v[0], v[1]);
     }
 
+    template <typename FPType>
+    FPInterval<FPType>& operator+=(FPInterval<FPType>& u, FPType v)
+    {
+        u = u + v;
+        return u;
+    }
+
+    template <typename FPType>
+    FPInterval<FPType>& operator+=(FPInterval<FPType>& u, FPInterval<FPType> const& v)
+    {
+        u = u + v;
+        return u;
+    }
+
     // Subtraction operations.
     template <typename FPType>
     FPInterval<FPType> operator-(FPType u, FPInterval<FPType> const& v)
@@ -306,6 +320,20 @@ namespace gte
     FPInterval<FPType> operator-(FPInterval<FPType> const& u, FPInterval<FPType> const& v)
     {
         return FPInterval<FPType>::Sub(u[0], u[1], v[0], v[1]);
+    }
+
+    template <typename FPType>
+    FPInterval<FPType>& operator-=(FPInterval<FPType>& u, FPType v)
+    {
+        u = u - v;
+        return u;
+    }
+
+    template <typename FPType>
+    FPInterval<FPType>& operator-=(FPInterval<FPType>& u, FPInterval<FPType> const& v)
+    {
+        u = u - v;
+        return u;
     }
 
     // Multiplication operations.
@@ -388,6 +416,20 @@ namespace gte
         }
     }
 
+    template <typename FPType>
+    FPInterval<FPType>& operator*=(FPInterval<FPType>& u, FPType v)
+    {
+        u = u * v;
+        return u;
+    }
+
+    template <typename FPType>
+    FPInterval<FPType>& operator*=(FPInterval<FPType>& u, FPInterval<FPType> const& v)
+    {
+        u = u * v;
+        return u;
+    }
+
     // Division operations. If the divisor FPInterval is [v0,v1] with
     // v0 < 0 < v1, then the returned FPInterval is (-infinity,+infinity)
     // instead of Union((-infinity,1/v0),(1/v1,+infinity)). An application
@@ -458,5 +500,18 @@ namespace gte
                 return FPInterval<FPType>::Reals();
             }
         }
+    }
+
+    template <typename FPType>
+    FPInterval<FPType>& operator/=(FPInterval<FPType>& u, FPType v)
+    {
+        u = u / v;
+        return u;
+    }
+    template <typename FPType>
+    FPInterval<FPType>& operator/=(FPInterval<FPType>& u, FPInterval<FPType> const& v)
+    {
+        u = u / v;
+        return u;
     }
 }

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.03.13
+// Version: 4.0.2020.09.03
 
 #pragma once
 
@@ -819,19 +819,34 @@ namespace gte
                 }
                 LogAssert(i0 < 3, "unexpected condition");
 
+                // Find the the edge-pair for vStart that contains vNext and
+                // remove it.
+                auto lbIter = edgePairs.lower_bound(vStart);
+                auto ubIter = edgePairs.upper_bound(vStart);
+                bool foundStart = false;
+                for (epIter = lbIter; epIter != ubIter; ++epIter)
+                {
+                    if (epIter->second[0] == vNext || epIter->second[1] == vNext)
+                    {
+                        edgePairs.erase(epIter);
+                        foundStart = true;
+                        break;
+                    }
+                }
+                LogAssert(foundStart, "unexpected condition");
+
                 // Compute the connected component of the boundary edges that
                 // contains the edge <vStart, vNext>.
                 std::vector<int> component;
                 component.push_back(vStart);
-                edgePairs.erase(vStart);
                 int vPrevious = vStart;
                 while (vNext != vStart)
                 {
                     component.push_back(vNext);
 
                     bool foundNext = false;
-                    auto lbIter = edgePairs.lower_bound(vNext);
-                    auto ubIter = edgePairs.upper_bound(vNext);
+                    lbIter = edgePairs.lower_bound(vNext);
+                    ubIter = edgePairs.upper_bound(vNext);
                     for (epIter = lbIter; epIter != ubIter; ++epIter)
                     {
                         if (vPrevious == epIter->second[0])

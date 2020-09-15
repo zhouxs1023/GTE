@@ -12,8 +12,8 @@ CFLAGS += -O2 -DNDEBUG
 endif
 
 ifeq (Dynamic,$(findstring Dynamic,$(CFG)))
-SOVER = 4
-RELVER = $(SOVER).8
+SOVER = 5
+RELVER = $(SOVER).0
 CFLAGS += -fPIC
 AR := $(CC)
 ARFLAGS := $(LDFLAGS) -shared -fPIC -Wl,-soname,libgtapplications.so.$(SOVER) -o

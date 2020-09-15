@@ -137,8 +137,7 @@ void ExtremalQueryWindow3::CreateConvexPolyhedron(int numVertices)
         Normalize(vertex);
     }
 
-    typedef BSNumber<UIntegerAP32> Rational;
-    ConvexHull3<float, Rational> hull;
+    ConvexHull3<float> hull;
     bool success = hull(numVertices, vertices.data(), 0.0f);
     LogAssert(success, "Invalid polyhedron.");
 

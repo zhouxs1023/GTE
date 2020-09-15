@@ -1,23 +1,21 @@
 #include "MinimumVolumeBox.h"
-#include <Mathematics/ArbitraryPrecision.h>
 #include <Mathematics/MinimumVolumeBox3.h>
 using namespace gte;
-
-typedef BSRational<UIntegerAP32> Rational;
 
 MVB3::MVB3()
 {
 }
 
-void MVB3::ComputeMinimumVolumeBoxFromPoints(uint32_t numThreads,
-    int numPoints, double const* points, double center[3], double axis[9],
-    double extent[3])
+void MVB3::ComputeMinimumVolumeBoxFromPoints(unsigned int numThreads,
+    int numPoints, double const* points, unsigned int lgMaxSample,
+    double center[3], double axis[9], double extent[3], double volume[1])
 {
     if (numPoints > 0 && points)
     {
-        MinimumVolumeBox3<double, Rational> mvb(numThreads);
+        MinimumVolumeBox3<double, true> mvb(numThreads);
         auto const* vpoints = reinterpret_cast<Vector3<double> const*>(points);
-        auto box = mvb(numPoints, vpoints);
+        OrientedBox3<double> box;
+        mvb(numPoints, vpoints, lgMaxSample, box, volume[0]);
         for (uint32_t i = 0; i < 3; ++i)
         {
             center[i] = box.center[i];
@@ -39,18 +37,21 @@ void MVB3::ComputeMinimumVolumeBoxFromPoints(uint32_t numThreads,
                 axis[3 * i + j] = 0.0;
             }
         }
+        volume[0] = 0.0;
     }
 }
 
-void MVB3::ComputeMinimumVolumeBoxFromPolyhedron(uint32_t numThreads,
+void MVB3::ComputeMinimumVolumeBoxFromPolyhedron(unsigned int numThreads,
     int numPoints, double const* points, int numIndices, int const* indices,
-    double center[3], double axis[9], double extent[3])
+    unsigned int lgMaxSample,
+    double center[3], double axis[9], double extent[3], double volume[1])
 {
     if (numPoints > 0 && points && numIndices > 0 && indices)
     {
-        MinimumVolumeBox3<double, Rational> mvb(numThreads);
+        MinimumVolumeBox3<double, true> mvb(numThreads);
         auto const* vpoints = reinterpret_cast<Vector3<double> const*>(points);
-        auto box = mvb(numPoints, vpoints, numIndices, indices);
+        OrientedBox3<double> box;
+        mvb(numPoints, vpoints, numIndices, indices, lgMaxSample, box, volume[0]);
         for (uint32_t i = 0; i < 3; ++i)
         {
             center[i] = box.center[i];
@@ -72,5 +73,6 @@ void MVB3::ComputeMinimumVolumeBoxFromPolyhedron(uint32_t numThreads,
                 axis[3 * i + j] = 0.0;
             }
         }
+        volume[0] = 0.0;
     }
 }

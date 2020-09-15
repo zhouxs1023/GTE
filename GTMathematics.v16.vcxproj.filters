@@ -1422,5 +1422,8 @@
     <ClInclude Include="Mathematics\RotationEstimate.h">
       <Filter>NumericalMethods</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\Timer.h">
+      <Filter>LowLevel</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

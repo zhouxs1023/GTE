@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.09.15
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/Environment.h>
@@ -114,10 +114,10 @@ std::string Environment::GetPath(std::string const& name) const
 
 std::string Environment::GetGTEPath() const
 {
-    std::string path = GetVariable("GTE4_PATH");
+    std::string path = GetVariable("GTE_PATH");
     if (path == "")
     {
-        LogWarning("You must create the environment variable GTE4_PATH.");
+        LogWarning("You must create the environment variable GTE_PATH.");
     }
     return path;
 }

@@ -38,6 +38,7 @@ namespace CSharpApplication
                 sqrtHalf, sqrtHalf, 0.0,
                 -sqrtHalf, sqrtHalf, 0.0,
                 0.0, 0.0, 1.0 };
+            double[] volume = new double[] { 0.0 };
 
             Random generator = new Random();
 
@@ -60,14 +61,17 @@ namespace CSharpApplication
 
             MVB3 mvb = new MVB3();
             uint numThreads = 4;
-            mvb.ComputeMinimumVolumeBoxFromPoints(numThreads, numPoints, points, center,
-                axis, extent);
+            uint lgMaxSample = 10;
+            mvb.ComputeMinimumVolumeBoxFromPoints(numThreads, numPoints, points,
+                lgMaxSample, center, axis, extent, volume);
 
             Console.WriteLine("center  = " + center[0] + ", " + center[1] + ", " + center[2]);
             Console.WriteLine("extent  = " + extent[0] + ", " + extent[1] + ", " + extent[2]);
             Console.WriteLine("axis[0] = " + axis[0] + ", " + axis[1] + ", " + axis[2]);
             Console.WriteLine("axis[1] = " + axis[3] + ", " + axis[4] + ", " + axis[5]);
             Console.WriteLine("axis[2] = " + axis[6] + ", " + axis[7] + ", " + axis[8]);
+            Console.WriteLine("volume  = " + volume[0]);
+            Console.WriteLine("Press enter to exit program.");
             Console.Read();
         }
     }

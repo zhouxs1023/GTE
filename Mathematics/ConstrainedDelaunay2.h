@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.09.03
 
 #pragma once
 
@@ -226,12 +226,10 @@ namespace gte
 
             lBoundary.push_back({ v0, -1 });
             binfo = GetAdjBoundary(tri, vPrev, vPrev);
-            LogAssert(binfo[0] != 2, CDTFailure());
             lBoundary.push_back(binfo);
 
             rBoundary.push_back({ v0, -1 });
             binfo = GetAdjBoundary(tri, vNext, v0);
-            LogAssert(binfo[0] != 2, CDTFailure());
             rBoundary.push_back(binfo);
 
             // Visit the triangles in the strip.  Guard against an infinite
@@ -256,11 +254,9 @@ namespace gte
                     // edge continues through vOpposite, decompose the edge
                     // and insert the right-most subedge.
                     binfo = GetAdjBoundary(tri, vOpposite, vOpposite);
-                    LogAssert(binfo[0] != 2, CDTFailure());
                     lBoundary.push_back(binfo);
 
                     binfo = GetAdjBoundary(tri, vOpposite, vNext);
-                    LogAssert(binfo[0] != 2, CDTFailure());
                     rBoundary.push_back(binfo);
 
                     Retriangulate(polygon, lBoundary, rBoundary);
@@ -278,14 +274,12 @@ namespace gte
                 if (qr < 0)
                 {
                     binfo = GetAdjBoundary(tri, vOpposite, vOpposite);
-                    LogAssert(binfo[0] != 2, CDTFailure());
                     lBoundary.push_back(binfo);
                     vPrev = vOpposite;
                 }
                 else  // qr > 0
                 {
                     binfo = GetAdjBoundary(tri, vOpposite, vNext);
-                    LogAssert(binfo[0] != 2, CDTFailure());
                     rBoundary.push_back(binfo);
                     vNext = vOpposite;
                 }

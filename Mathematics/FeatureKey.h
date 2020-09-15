@@ -30,34 +30,55 @@ namespace gte
         FeatureKey() = default;
 
     public:
+        // The std::array comparisons were removed to improve the speed of the
+        // comparisons when using the C++ Standard Library that ships with
+        // Microsoft Visual Studio 2019 16.7.*.
         bool operator==(FeatureKey const& key) const
         {
-            return V == key.V;
+            for (size_t i = 0; i < N; ++i)
+            {
+                if (V[i] != key.V[i])
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         bool operator!=(FeatureKey const& key) const
         {
-            return V != key.V;
+            return !operator==(key);
         }
 
         bool operator<(FeatureKey const& key) const
         {
-            return V < key.V;
+            for (size_t i = 0; i < N; ++i)
+            {
+                if (V[i] < key.V[i])
+                {
+                    return true;
+                }
+                if (V[i] > key.V[i])
+                {
+                    return false;
+                }
+            }
+            return false;
         }
 
         bool operator<=(FeatureKey const& key) const
         {
-            return V <= key.V;
+            return !key.operator<(*this);
         }
 
         bool operator>(FeatureKey const& key) const
         {
-            return V > key.V;
+            return key.operator<(*this);
         }
 
         bool operator>=(FeatureKey const& key) const
         {
-            return V >= key.V;
+            return !operator<(key);
         }
 
         std::array<int, N> V;

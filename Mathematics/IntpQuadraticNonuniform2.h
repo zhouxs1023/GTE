@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.09.14
 
 #pragma once
 
@@ -341,7 +341,7 @@ namespace gte
             TriangleData& tData = mTData[t];
 
             // Get the sample data at main triangle vertices.
-            std::array<int, 3> indices;
+            std::array<int, 3> indices = { 0, 0, 0 };
             mMesh->GetIndices(t, indices);
             Jet jet[3];
             for (int j = 0; j < 3; ++j)
@@ -353,7 +353,7 @@ namespace gte
             }
 
             // Get centers of adjacent triangles.
-            std::array<int, 3> adjacencies;
+            std::array<int, 3> adjacencies = { 0, 0, 0 };
             mMesh->GetAdjacencies(t, adjacencies);
             Vector2<Real> U[3];
             for (int j0 = 2, j1 = 0; j1 < 3; j0 = j1++)

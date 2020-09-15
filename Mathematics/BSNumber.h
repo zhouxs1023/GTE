@@ -3,13 +3,15 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.04.04
+// Version: 4.0.2020.09.03
 
 #pragma once
 
 #include <Mathematics/BitHacks.h>
 #include <Mathematics/Math.h>
 #include <Mathematics/IEEEBinary.h>
+#include <istream>
+#include <ostream>
 
 // The class BSNumber (binary scientific number) is designed to provide exact
 // arithmetic for robust algorithms, typically those for which we need to know

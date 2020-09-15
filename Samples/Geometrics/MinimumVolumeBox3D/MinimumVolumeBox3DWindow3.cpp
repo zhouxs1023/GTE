@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.09.05
 
 #include "MinimumVolumeBox3DWindow3.h"
 #include <Applications/Timer.h>
@@ -104,45 +104,23 @@ void MinimumVolumeBox3DWindow3::CreateScene()
     mPVWMatrices.Subscribe(mPoints->worldTransform, effect->GetPVWMatrixConstant());
     mScene->AttachChild(mPoints);
 
-    // Choose the number of threads to use.  The default constructor for
-    // MinimumVolumeBox3 uses a default of 1, in which case all computations
-    // are on the main thread.  The timings below are for a 64-bit release
-    // build (no debugger attached) on Intel Core i7-3930K CPUs running at
-    // 3.20 GHz.
-    unsigned int numThreads = 1;
+    // Compute the minimum-volume box. The convex hull of the vertices is
+    // computed internally.
+    uint32_t const numThreads = 4;
+    size_t const lgMaxSample = 5;
+    MinimumVolumeBox3<float, false> mvb3(numThreads);
+    OrientedBox3<float> minBox;
+    float volume;
+    mvb3(NUM_POINTS, &mVertices[0], lgMaxSample, minBox, volume);
 
-#if 0
-    // Compute the convex hull internally using arbitrary precision
-    // arithmetic.  This is slower than computing the hull explicitly using
-    // the maximum fixed precision; see the other conditional block of code.
-    Timer timer;
-    typedef BSRational<UIntegerAP32> MVBRational;
-    MinimumVolumeBox3<float, MVBRational> mvb3(numThreads);
-    OrientedBox3<float> minBox = mvb3(NUM_POINTS, &mVertices[0]);
-    std::cout << "mvb3 seconds = " << timer.GetSeconds() << std::endl;
-    // numThreads = 1, seconds = 7.09
-    // numThreads = 2, seconds = 6.22
-#else
-    // If mVertices were to use 'double', you would need the template type
-    // UIntegerFP32<167> to compute the convex hull.
-    Timer timer;
-    typedef BSNumber<UIntegerFP32<27>> CHRational;
-    ConvexHull3<float, CHRational> ch3(numThreads);
+    // Recompute the convex hull for visualization.
+    ConvexHull3<float> ch3;
     ch3(NUM_POINTS, &mVertices[0], 0.0f);
     std::vector<TriangleKey<true>> const& triangles = ch3.GetHullUnordered();
-    int const numIndices = static_cast<int>(3 * triangles.size());
     int const* indices = static_cast<int const*>(&triangles[0].V[0]);
-    typedef BSRational<UIntegerAP32> MVBRational;
-    MinimumVolumeBox3<float, MVBRational> mvb3(numThreads);
-    OrientedBox3<float> minBox = mvb3(NUM_POINTS, &mVertices[0], numIndices, indices);
-    std::cout << "mvb3 seconds = " << timer.GetSeconds() << std::endl;
-    // numThreads = 1, seconds = 2.69
-    // numThreads = 2, seconds = 2.01
-#endif
-
-    std::vector<int> const& hull = mvb3.GetHull();
-    ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, static_cast<int>(hull.size() / 3), sizeof(int));
-    std::memcpy(ibuffer->GetData(), &hull[0], ibuffer->GetNumBytes());
+    ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH,
+        static_cast<uint32_t>(triangles.size()), sizeof(int));
+    std::memcpy(ibuffer->GetData(), indices, ibuffer->GetNumBytes());
     mPolytope = std::make_shared<Visual>(vbuffer, ibuffer, effect);
     mScene->AttachChild(mPolytope);
 

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.09.03
 
 #pragma once
 
@@ -32,7 +32,7 @@ namespace gte
         typedef std::vector<Vertex> VArray;
 
         // edges
-        typedef EdgeKey<false> Edge;
+        typedef EdgeKey<true> Edge;
         typedef std::map<Edge, int> EMap;
         typedef std::vector<Edge> EArray;
 

@@ -3,12 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.08.30
 
 #pragma once
 
 #include <Applications/Window2.h>
-#include <Mathematics/ArbitraryPrecision.h>
 #include <Mathematics/ConvexHull2.h>
 using namespace gte;
 
@@ -22,5 +21,5 @@ public:
 private:
     std::vector<Vector2<float>> mVertices;
     std::vector<int> mHull;
-    ConvexHull2<float, BSNumber<UIntegerAP32>> mConvexHull;
+    ConvexHull2<float> mConvexHull;
 };

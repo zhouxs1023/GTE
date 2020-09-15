@@ -309,22 +309,22 @@ int main()
 
     bsNumberFloatWords = PrimalQuery2ToLine(BSPrecision::IS_FLOAT, true);  // 18
     bsNumberDoubleWords = PrimalQuery2ToLine(BSPrecision::IS_DOUBLE, true);  // 132
-    bsRationalFloatWords = PrimalQuery2ToLine(BSPrecision::IS_FLOAT, false);  // 35
-    bsRationalDoubleWords = PrimalQuery2ToLine(BSPrecision::IS_DOUBLE, false);  // 263
+    bsRationalFloatWords = PrimalQuery2ToLine(BSPrecision::IS_FLOAT, false);  // 70
+    bsRationalDoubleWords = PrimalQuery2ToLine(BSPrecision::IS_DOUBLE, false);  // 525
 
     bsNumberFloatWords = PrimalQuery2ToCircumcircle(BSPrecision::IS_FLOAT, true);  // 35
     bsNumberDoubleWords = PrimalQuery2ToCircumcircle(BSPrecision::IS_DOUBLE, true);  // 263
-    bsRationalFloatWords = PrimalQuery2ToCircumcircle(BSPrecision::IS_FLOAT, false);  // 105
-    bsRationalDoubleWords = PrimalQuery2ToCircumcircle(BSPrecision::IS_DOUBLE, false);  // 788
+    bsRationalFloatWords = PrimalQuery2ToCircumcircle(BSPrecision::IS_FLOAT, false);  // 573
+    bsRationalDoubleWords = PrimalQuery2ToCircumcircle(BSPrecision::IS_DOUBLE, false);  // 4329
 
     bsNumberFloatWords = PrimalQuery3ToPlane(BSPrecision::IS_FLOAT, true);  // 27
     bsNumberDoubleWords = PrimalQuery3ToPlane(BSPrecision::IS_DOUBLE, true);  // 197
-    bsRationalFloatWords = PrimalQuery3ToPlane(BSPrecision::IS_FLOAT, false);  // 79
-    bsRationalDoubleWords = PrimalQuery3ToPlane(BSPrecision::IS_DOUBLE, false);  // 591
+    bsRationalFloatWords = PrimalQuery3ToPlane(BSPrecision::IS_FLOAT, false);  // 261
+    bsRationalDoubleWords = PrimalQuery3ToPlane(BSPrecision::IS_DOUBLE, false);  // 1968
 
     bsNumberFloatWords = PrimalQuery3ToCircumsphere(BSPrecision::IS_FLOAT, true);  // 44
     bsNumberDoubleWords = PrimalQuery3ToCircumsphere(BSPrecision::IS_DOUBLE, true);  // 329
-    bsRationalFloatWords = PrimalQuery3ToCircumsphere(BSPrecision::IS_FLOAT, false);  // 262
-    bsRationalDoubleWords = PrimalQuery3ToCircumsphere(BSPrecision::IS_DOUBLE, false);  // 1969
+    bsRationalFloatWords = PrimalQuery3ToCircumsphere(BSPrecision::IS_FLOAT, false);  // 1875
+    bsRationalDoubleWords = PrimalQuery3ToCircumsphere(BSPrecision::IS_DOUBLE, false);  // 14167
     return 0;
 }

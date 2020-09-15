@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.09.15
 
 #pragma once
 
@@ -36,10 +36,10 @@ namespace gte
         Application(Parameters const& parameters);
 
     public:
-        // Get the value of the GTE4_PATH environment variable. Derived
+        // Get the value of the GTE_PATH environment variable. Derived
         // classes may use this variable to ensure the existence of input
         // data sets that are required by an application. If the function
-        // returns "", the GTE4_PATH variable has not been set.
+        // returns "", the GTE_PATH variable has not been set.
         inline std::string GetGTEPath() const
         {
             return mEnvironment.GetGTEPath();

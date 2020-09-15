@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.09.15
 
 #pragma once
 
@@ -40,7 +40,7 @@ namespace gte
         std::string GetPath(std::string const& name) const;
 
         // Get the path to the GTE folder.  This is obtained from the
-        // GTE4_PATH environment variable, and it is required when you want
+        // GTE_PATH environment variable, and it is required when you want
         // a guaranteed way of finding application data/files in the GTE
         // subtree.  If you call this function and the environment variable
         // does not exist, the returned string is "".  The function calls

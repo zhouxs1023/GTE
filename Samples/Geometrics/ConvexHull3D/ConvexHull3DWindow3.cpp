@@ -155,9 +155,7 @@ bool ConvexHull3DWindow3::LoadData()
         }
     }
 
-    // The worst-case number of words for UIntegerFP32<N> for 'float' input
-    // to ConvexHull3 is N = 27.  For 'double', it is 'N = 197'.
-    ConvexHull3<float, BSNumber<UIntegerFP32<27>>> ch;
+    ConvexHull3<float> ch;
     if (numVertices < 4 || !ch(numVertices, &vertices[0], 0.0f))
     {
         if (mMesh)
